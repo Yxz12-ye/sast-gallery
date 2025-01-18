@@ -13,12 +13,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-set(PROJECT_SOURCES
-    src/main.cpp
+file(GLOB_RECURSE PROJECT_SOURCES
+    src/*.cpp
+    src/*.h
 )
 
 qt_add_executable(sast-gallery
-    MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
     3rdpart/ElaWidgetTools/src/include/ElaWidgetTools.qrc
 )
@@ -30,16 +30,24 @@ target_include_directories(sast-gallery PRIVATE
     3rdpart/ElaWidgetTools/src/include
 )
 
-target_link_libraries(sast-gallery PRIVATE 
+target_link_libraries(sast-gallery PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
-    ElaWidgetTools    
+    ElaWidgetTools
 )
+
+# copy ElaWidgetTools library to compile output dir, useful for vscode
+if(win32)
+    add_custom_command(TARGET sast-gallery POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:sast-gallery> $<TARGET_FILE:ElaWidgetTools>
+        COMMAND_EXPAND_LISTS
+    )
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.sast-gallery)
+    set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.sast-gallery)
 endif()
 set_target_properties(sast-gallery PROPERTIES
     ${BUNDLE_ID_OPTION}
@@ -55,7 +63,3 @@ install(TARGETS sast-gallery
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(sast-gallery)
-endif()

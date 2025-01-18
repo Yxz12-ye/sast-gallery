@@ -56,3 +56,6 @@ action-cli
 
 # CMakeLists.txt.user files
 CMakeLists.txt.user
+
+# vscode
+.vscode
