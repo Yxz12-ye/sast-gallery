@@ -8,9 +8,7 @@ GalleryPage::GalleryPage(QWidget* parent)
     // page root
     auto* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("Gallery");
-
-    addCentralWidget(rootWidget);
-
+    addCentralWidget(centralWidget);
 }
 
 GalleryPage::~GalleryPage() {}
