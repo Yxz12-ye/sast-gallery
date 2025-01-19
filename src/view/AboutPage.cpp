@@ -4,7 +4,11 @@
 AboutPage::AboutPage(QWidget* parent)
     : BasePage(parent) {
     setWindowTitle("About");
-    addCentralWidget(new ElaText("Empty", this));
+
+    // page root
+    auto* centralWidget = new QWidget(this);
+    centralWidget->setWindowTitle("About");
+    addCentralWidget(centralWidget);
 }
 
 AboutPage::~AboutPage() {}

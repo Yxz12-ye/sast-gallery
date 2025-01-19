@@ -4,7 +4,11 @@
 SettingPage::SettingPage(QWidget* parent)
     : BasePage(parent) {
     setWindowTitle("Setting");
-    addCentralWidget(new ElaText("Empty", this));
+
+    // page root
+    auto* centralWidget = new QWidget(this);
+    centralWidget->setWindowTitle("Setting");
+    addCentralWidget(centralWidget);
 }
 
 SettingPage::~SettingPage() {}

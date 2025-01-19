@@ -1,5 +1,8 @@
+#pragma once
 #include "utils/WindowOverlayWidget.h"
-#include <qnamespace.h>
+
+// ref: https://doc.qt.io/qt-5/qtwidgets-widgets-imageviewer-example.html
+// TODO: implement me
 
 class ImageViewer : public WindowOverlayWidget {
 public:
@@ -10,6 +13,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent*) override {
+        // placeholder
         QPainter p{this};
         p.fillRect(rect(), {100, 100, 100, 128});
         p.setPen({200, 200, 255});

@@ -4,7 +4,11 @@
 FavoritePage::FavoritePage(QWidget* parent)
     : BasePage(parent) {
     setWindowTitle("Favorite");
-    addCentralWidget(new ElaText("Empty", this));
+
+    // page root
+    auto* centralWidget = new QWidget(this);
+    centralWidget->setWindowTitle("Favorite");
+    addCentralWidget(centralWidget);
 }
 
 FavoritePage::~FavoritePage() {}
