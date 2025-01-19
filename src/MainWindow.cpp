@@ -1,13 +1,4 @@
 #include "MainWindow.h"
-#include "view/AboutPage.h"
-#include "view/FavoritePage.h"
-#include <QDebug>
-#include <QGraphicsView>
-#include <QHBoxLayout>
-#include <QStackedWidget>
-#include <QStatusBar>
-#include <QVBoxLayout>
-#include <qobject.h>
 
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent) {
@@ -27,6 +18,7 @@ void MainWindow::initWindow() {
 }
 
 void MainWindow::initContent() {
+    // pages
     galleryPage = new GalleryPage(this);
     addPageNode("Gallery", galleryPage, ElaIconType::Images);
 
@@ -40,4 +32,8 @@ void MainWindow::initContent() {
     settingPage = new SettingPage(this);
     QString settingPageKey;
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
+
+    // image viewer
+    imageViewer = new ImageViewer(this);
+    imageViewer->hide();
 }

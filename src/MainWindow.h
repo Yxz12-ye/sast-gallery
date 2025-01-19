@@ -1,10 +1,11 @@
 #pragma once
+#include "delegate/ImageViewer.h"
 #include "view/AboutPage.h"
 #include "view/FavoritePage.h"
 #include "view/GalleryPage.h"
 #include "view/SettingPage.h"
 #include <ElaWindow.h>
-#include <QMainWindow>
+
 
 class MainWindow : public ElaWindow {
     Q_OBJECT
@@ -17,8 +18,12 @@ public:
     void initContent();
 
 private:
+    // pages
     FavoritePage* favoritePage;
     GalleryPage* galleryPage;
     SettingPage* settingPage;
     AboutPage* aboutPage;
+
+    // image viewer
+    ImageViewer* imageViewer;
 };

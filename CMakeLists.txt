@@ -27,6 +27,7 @@ qt_add_executable(sast-gallery
 add_subdirectory(3rdpart/ElaWidgetTools)
 
 target_include_directories(sast-gallery PRIVATE
+    src
     3rdpart/ElaWidgetTools/src/include
 )
 
