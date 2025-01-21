@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "view/ViewingWindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent) {
@@ -33,7 +34,7 @@ void MainWindow::initContent() {
     QString settingPageKey;
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
 
-    // media viewer
-    mediaViewer = new MediaViewer(this);
-    mediaViewer->hide();
+    // ViewingWindow for media
+    auto* viewingWindow = new ViewingWindow(this);
+    viewingWindow->show();
 }
