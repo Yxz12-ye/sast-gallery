@@ -1,6 +1,6 @@
 #pragma once
 
-#include "delegate/ImageViewer.h"
+#include "delegate/MediaViewer.h"
 #include "view/AboutPage.h"
 #include "view/FavoritePage.h"
 #include "view/GalleryPage.h"
@@ -24,6 +24,6 @@ private:
     SettingPage* settingPage;
     AboutPage* aboutPage;
 
-    // image viewer
-    ImageViewer* imageViewer;
+    // media viewer
+    MediaViewer* mediaViewer;
 };

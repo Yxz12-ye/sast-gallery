@@ -1,4 +1,4 @@
 #pragma once
 
-// proxy model filtering favorite images
+// proxy model filtering favorite media
 // TODO: implement me

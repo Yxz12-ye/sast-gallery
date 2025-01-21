@@ -33,7 +33,7 @@ void MainWindow::initContent() {
     QString settingPageKey;
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
 
-    // image viewer
-    imageViewer = new ImageViewer(this);
-    imageViewer->hide();
+    // media viewer
+    mediaViewer = new MediaViewer(this);
+    mediaViewer->hide();
 }
