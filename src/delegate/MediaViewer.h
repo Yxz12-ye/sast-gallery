@@ -47,9 +47,9 @@ protected:
         }
     }
      
-
-
-    virtual void displaymedia()=0;
+  /*
+  
+   virtual void displaymedia()=0;
     
     virtual void previousmedia()=0;
     
@@ -72,6 +72,9 @@ protected:
     virtual void mute()=0; //only for videos
 
     virtual void unmute()=0; //only for videos
+
+  */ 
+
 
     
 private:
