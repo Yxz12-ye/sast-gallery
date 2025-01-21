@@ -1,4 +1,5 @@
 #pragma once
+
 #include "utils/WindowOverlayWidget.h"
 #include <QImage>
 #include <QMediaPlayer>
@@ -18,7 +19,7 @@ public:
     MediaViewer(QWidget* parent = {});
     bool loadImage(const QString& path);   
     bool loadVideo(const QString& path);
-
+    
 protected:
     void paintEvent(QPaintEvent*) override {
         // placeholder
@@ -30,7 +31,7 @@ protected:
         p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
     }
 
-
+    
     void mousePressEvent(QMouseEvent* mouseEvent) override {
         if (mouseEvent->button() == Qt::LeftButton) {
             dragPosition = mouseEvent->globalPosition().toPoint() - frameGeometry().topLeft();
@@ -45,11 +46,36 @@ protected:
             mouseEvent->accept();
         }
     }
+     
 
+
+    virtual void displaymedia()=0;
+    
+    virtual void previousmedia()=0;
+    
+    virtual void nextmedia()=0;
+
+    virtual void deleteMedia()=0;
+
+    virtual void checkMediaInfo()=0;
+
+    virtual void rotateImage()=0; //only for images
+
+    virtual void scaleImage(double factor)=0;//only for images
+
+    virtual void play()=0; //only for videos
+
+    virtual void pause()=0; //only for videos
+
+    virtual void setVolume(int volume)=0; //only for videos
+
+    virtual void mute()=0; //only for videos
+
+    virtual void unmute()=0; //only for videos
+
+    
 private:
-    void scroll(const QPoint& delta) {
-        // placeholder
-    }
+    
 
     QImage image; //process image in RAM , then cast to QPixmap to QLabel for display
     QLabel* imageLabel;
@@ -60,3 +86,6 @@ private:
     double scaleFactor;
 
 };
+
+
+
