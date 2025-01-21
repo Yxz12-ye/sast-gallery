@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "utils/Settings.hpp"
 #include "view/ViewingWindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -8,10 +9,12 @@ MainWindow::MainWindow(QWidget* parent)
     moveToCenter();
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() {
+    settings.setValue("windowSize", size());
+}
 
 void MainWindow::initWindow() {
-    resize(1200, 740);
+    resize(settings.value("windowSize").toSize());
     setUserInfoCardVisible(false);
     setWindowTitle("SAST Gallery");
 
@@ -35,6 +38,7 @@ void MainWindow::initContent() {
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
 
     // ViewingWindow for media
-    auto* viewingWindow = new ViewingWindow(this);
+    auto* viewingWindow = new ViewingWindow();
+    connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
     viewingWindow->show();
 }

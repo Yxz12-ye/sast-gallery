@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QSettings>
+#include <QSize>
 #include <filesystem>
 
 inline QSettings settings = [] {
@@ -18,3 +19,24 @@ inline QSettings settings = [] {
     return QSettings(QString::fromStdString(configDir.string() + "/settings.ini"),
                      QSettings::IniFormat);
 }();
+
+inline void initSettings() {
+    if (!settings.contains("windowSize")) {
+        settings.setValue("windowSize", QSize(1200, 740));
+    }
+    if (!settings.contains("theme")) {
+        settings.setValue("theme", "light");
+    }
+    if (!settings.contains("micaEffect")) {
+        settings.setValue("micaEffect", false);
+    }
+    if (!settings.contains("navigationBarDisplayMode")) {
+        settings.setValue("navigationBarDisplayMode", 0);
+    }
+    if (!settings.contains("wheelBehavior")) {
+        settings.setValue("wheelBehavior", 0);
+    }
+    if (!settings.contains("deletionSwitch")) {
+        settings.setValue("deletionSwitch", true);
+    }
+}

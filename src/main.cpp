@@ -7,21 +7,11 @@
 
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
-
-    // Initialize settings
-    if (!settings.contains("windowSize")) {
-        settings.setValue("windowSize", QSize(1200, 740));
-    }
-    if (!settings.contains("theme")) {
-        settings.setValue("theme", "Light");
-    }
-
+    initSettings();
     ElaApplication::getInstance()->init();
     ElaTheme::getInstance()->setThemeMode(
-        settings.value("theme").toString() == "Light" ? ElaThemeType::Light : ElaThemeType::Dark);
+        settings.value("theme").toString() == "light" ? ElaThemeType::Light : ElaThemeType::Dark);
     MainWindow w;
-    w.resize(settings.value("windowSize").toSize());
     w.show();
-
     return a.exec();
 }
