@@ -8,6 +8,8 @@ AboutPage::AboutPage(QWidget* parent)
     // page root
     auto* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("About");
+    centralWidget->setSizePolicy(QSizePolicy::Policy::Ignored,
+                                 centralWidget->sizePolicy().verticalPolicy());
     addCentralWidget(centralWidget);
 }
 

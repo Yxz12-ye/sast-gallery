@@ -8,6 +8,8 @@ SettingPage::SettingPage(QWidget* parent)
     // page root
     auto* centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("Setting");
+    centralWidget->setSizePolicy(QSizePolicy::Policy::Ignored,
+                                 centralWidget->sizePolicy().verticalPolicy());
     addCentralWidget(centralWidget);
 }
 
