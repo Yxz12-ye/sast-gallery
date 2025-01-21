@@ -7,7 +7,9 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <QVBoxLayout>
-// ref: https://doc.qt.io/qt-5/qtwidgets-widgets-MediaViewer-example.html
+#include <QLabel>
+#include <QPixmap>
+// ref: https://doc.qt.io/qt-5/qtwidgets-widgets-imageviewer-example.html
 // TODO: implement me
 
 class MediaViewer : public WindowOverlayWidget {
@@ -28,21 +30,20 @@ protected:
         p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
     }
 
-    void wheelEvent(QWheelEvent* event) override {
-        if (event->angleDelta().y() > 0) {
-            scaleFactor *= 1.1;
-        } else {
-            scaleFactor /= 1.1;
+
+    void mousePressEvent(QMouseEvent* mouseEvent) override {
+        if (mouseEvent->button() == Qt::LeftButton) {
+            dragPosition = mouseEvent->globalPosition().toPoint() - frameGeometry().topLeft();
+            mouseEvent->accept();
         }
-        update();
+
     }
 
-    void mousePressEvent(QMouseEvent* event) override {
-        if (event->button() == Qt::LeftButton) {
-            dragPosition = event->globalPos() - frameGeometry().topLeft();
-            event->accept();
+    void mouseMoveEvent(QMouseEvent* mouseEvent)override{
+        if (mouseEvent->buttons() & Qt::LeftButton) {
+            move(mouseEvent->globalPosition().toPoint() - dragPosition);
+            mouseEvent->accept();
         }
-
     }
 
 private:
@@ -50,7 +51,8 @@ private:
         // placeholder
     }
 
-    QImage image;
+    QImage image; //process image in RAM , then cast to QPixmap to QLabel for display
+    QLabel* imageLabel;
     QMediaPlayer* mediaPlayer;
     QVideoWidget* videoWidget;
     QVBoxLayout* layout;

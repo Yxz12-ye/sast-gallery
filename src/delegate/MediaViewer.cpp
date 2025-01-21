@@ -19,14 +19,36 @@ MediaViewer::MediaViewer(QWidget* parent)
 
 bool MediaViewer::loadImage(const QString& path)
 {
-   //to be implemented
+   try{
+    image.load(path);
+    if(image.isNull())
+    {
+        return false;
+    }
+    imageLabel = new QLabel(this);
+    imageLabel->setPixmap(QPixmap::fromImage(image));
+    layout->addWidget(imageLabel);
+    return true;
+
+   }
+   catch(std::exception& err)
+   {
     return false;
+   }
 }
 
 bool MediaViewer::loadVideo(const QString& path)
 {
-    //to be implemented
-    return false;
+    try{
+    mediaPlayer->setSource(QUrl::fromLocalFile(path));
+    mediaPlayer->play();
+    videoWidget->show();
+    return true;
+    }
+    catch(std::exception& err)
+    {
+        return false;
+    }
 }
 
 
