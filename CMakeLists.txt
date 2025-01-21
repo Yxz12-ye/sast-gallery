@@ -16,6 +16,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia Multim
 file(GLOB_RECURSE PROJECT_SOURCES
     src/*.cpp
     src/*.h
+    3rdpart/ElaWidgetTools/src/DeveloperComponents/*.cpp
 )
 
 qt_add_executable(sast-gallery
