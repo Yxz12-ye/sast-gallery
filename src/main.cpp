@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
-    QApplication::setWindowIcon(QIcon(":/res/icon/app.svg"));
+    QApplication::setWindowIcon(QIcon(":/res/icon/app_icon.svg"));
     initSettings();
     ElaApplication::getInstance()->init();
     ElaTheme::getInstance()->setThemeMode(

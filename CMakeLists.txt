@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/.cmake/)
+
 project(sast-gallery VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
@@ -47,6 +49,13 @@ if(win32)
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:sast-gallery> $<TARGET_FILE:ElaWidgetTools>
         COMMAND_EXPAND_LISTS
     )
+endif()
+
+if(win32)
+  configure_file(
+      ${CMAKE_SOURCE_DIR}/.cmake/InstallerScript.iss.in
+      ${CMAKE_SOURCE_DIR}/action-cli/InstallerScript.iss
+  )
 endif()
 
 if(APPLE)
