@@ -49,6 +49,7 @@ CMakeUserPresets.json
 # Windows build output
 action-cli
 *.rc
+!res/icon/app.rc
 
 # i18n files
 *.mo
