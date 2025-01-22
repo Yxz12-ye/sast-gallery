@@ -7,19 +7,15 @@
 // layout media in gallery and favorite
 
 class MediaFlexLayout : public QLayout {
+    Q_OBJECT
     QList<QLayoutItem*> itemList;
 
     struct LayoutData {
         double radio; // width/height
-
-        // like item[row][col]
-        int row = -1; // line number
-        int col = -1; // line offset
     };
 
     int preferredLineHeight = 180;
     QList<LayoutData> itemLayoutData;
-    QList<int> lineHeight;
 
 public:
     explicit MediaFlexLayout(QWidget* parent = nullptr);

@@ -54,6 +54,7 @@ QLayoutItem* MediaFlexLayout::itemAt(int index) const {
 
 QLayoutItem* MediaFlexLayout::takeAt(int index) {
     if (index >= 0 && index < itemList.size()) {
+        itemLayoutData.takeAt(index);
         return itemList.takeAt(index);
     }
     return nullptr;

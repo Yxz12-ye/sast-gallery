@@ -1,6 +1,6 @@
-#include "MediaThumbnail.h"
+#include "MediaPreview.h"
 
-MediaThumbnail::MediaThumbnail(QWidget* parent, const QString& filepath)
+MediaPreview::MediaPreview(QWidget* parent, const QString& filepath)
     : QLabel(parent)
     , filepath(filepath) {
     setScaledContents(true);
@@ -10,14 +10,14 @@ MediaThumbnail::MediaThumbnail(QWidget* parent, const QString& filepath)
     img = img.scaledToHeight(180, Qt::SmoothTransformation);
 }
 
-MediaThumbnail::~MediaThumbnail() {}
+MediaPreview::~MediaPreview() {}
 
-void MediaThumbnail::showEvent(QShowEvent* event) {
+void MediaPreview::showEvent(QShowEvent* event) {
     setPixmap(img);
     // setPixmap(img.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-void MediaThumbnail::resizeEvent(QResizeEvent* event) {
+void MediaPreview::resizeEvent(QResizeEvent* event) {
     if (!isVisible()) {
         return;
     }
@@ -25,6 +25,6 @@ void MediaThumbnail::resizeEvent(QResizeEvent* event) {
     // setPixmap(img.scaled(event->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-QSize MediaThumbnail::sizeHint() const {
+QSize MediaPreview::sizeHint() const {
     return mediaSize.scaled(1000, 150, Qt::KeepAspectRatio);
 }

@@ -1,5 +1,5 @@
 #include "GalleryPage.h"
-#include "utils/MediaThumbnail.h"
+#include "utils/MediaPreview.h"
 
 GalleryPage::GalleryPage(QWidget* parent)
     : BasePage(parent) {
@@ -14,7 +14,7 @@ GalleryPage::GalleryPage(QWidget* parent)
 
     centralLayout = new MediaFlexLayout(centralWidget);
 
-    // centralLayout->addWidget(new MediaThumbnail())
+    // centralLayout->addWidget(new MediaPreview())
 }
 
 GalleryPage::~GalleryPage() {}
