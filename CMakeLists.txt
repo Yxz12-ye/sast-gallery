@@ -22,6 +22,8 @@ file(GLOB_RECURSE PROJECT_SOURCES
 qt_add_executable(sast-gallery
     ${PROJECT_SOURCES}
     3rdpart/ElaWidgetTools/src/include/ElaWidgetTools.qrc
+    res/res.qrc
+    res/icon/app.rc
 )
 
 # Add ElaWidgetTools
@@ -45,6 +47,21 @@ if(win32)
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:sast-gallery> $<TARGET_FILE:ElaWidgetTools>
         COMMAND_EXPAND_LISTS
     )
+endif()
+
+if(APPLE)
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER ${IDENTIFIER})
+    set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
+    set(MACOSX_BUNDLE_COPYRIGHT ${COPYRIGHT})
+
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${spectral_VERSION})
+    set(MACOSX_BUNDLE_BUNDLE_VERSION ${spectral_VERSION})
+
+    set(ICON_NAME "res/icon/app.icns")
+    set(${PROJECT_NAME}_MAC_ICON "${CMAKE_SOURCE_DIR}/${ICON_NAME}")
+    set(MACOSX_BUNDLE_ICON_FILE ${ICON_NAME})
+    set_property(SOURCE "${${PROJECT_NAME}_MAC_ICON}" PROPERTY
+        MACOSX_PACKAGE_LOCATION Resources)
 endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
