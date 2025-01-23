@@ -74,6 +74,10 @@ int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
     getContentsMargins(&left, &top, &right, &bottom);
     QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
 
+    if (itemList.size() == 0) {
+        return top + bottom;
+    }
+
     int startItem = 0;
     int endItem = -1;
     int y = effectiveRect.y();

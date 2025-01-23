@@ -3,7 +3,8 @@
 #include <QMetaType>
 
 struct MediaItem {
-    QFileInfo fileInfo;
+    QString path;
+    QDateTime lastModifiedTime;
     bool isFavorite;
 };
 

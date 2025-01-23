@@ -1,1 +1,132 @@
 #include "DiskScanner.h"
+#include <QDir>
+#include <QDirListing>
+#include <QStandardPaths>
+
+DiskScanner::DiskScanner() {
+    connect(&diskWatcher, &QFileSystemWatcher::directoryChanged, [this](const QString& path) {
+        scanPath(path);
+        submitChange();
+    });
+
+    addPaths(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation));
+    addPaths(QStandardPaths::standardLocations(QStandardPaths::MoviesLocation));
+}
+
+void DiskScanner::addPath(const QString& path) {
+    if (searchPath.contains(path)) {
+        return;
+    }
+
+    searchPath.append(path);
+
+    QStringList pendingPath;
+    pendingPath.append(path);
+    using Flag = QDirListing::IteratorFlag;
+    for (const auto& dirEntry : QDirListing(path, Flag::DirsOnly | Flag::Recursive)) {
+        pendingPath.append(dirEntry.absoluteFilePath());
+    }
+
+    for (auto& path : pendingPath) {
+        if (diskWatcher.directories().contains(path)) {
+            continue;
+        }
+        diskWatcher.addPath(path);
+
+        qInfo() << "DiskScanner: path added to disk watcher: " << path;
+    }
+}
+
+void DiskScanner::addPaths(const QStringList& paths) {
+    for (auto path : paths) {
+        addPath(path);
+    }
+}
+
+void DiskScanner::removePath(const QString& path) {
+    if (!searchPath.removeOne(path)) {
+        return;
+    }
+
+    QStringList pendingPath;
+    pendingPath.append(path);
+    using Flag = QDirListing::IteratorFlag;
+    for (const auto& dirEntry : QDirListing(path, Flag::DirsOnly | Flag::Recursive)) {
+        pendingPath.append(dirEntry.absoluteFilePath());
+    }
+
+    for (auto& path : pendingPath) {
+        if (!diskWatcher.directories().contains(path)) {
+            continue;
+        }
+        diskWatcher.removePath(path);
+        scanPath(path);
+
+        qInfo() << "DiskScanner: path removed from disk watcher: " << path;
+    }
+    submitChange();
+}
+
+void DiskScanner::removePaths(const QStringList& paths) {
+    for (auto path : paths) {
+        removePath(path);
+    }
+}
+
+QStringList DiskScanner::path() {
+    return searchPath;
+}
+
+void DiskScanner::scan(bool fullScan) {
+    for (auto& path : diskWatcher.directories()) {
+        scanPath(path, fullScan);
+    }
+    submitChange();
+}
+
+void DiskScanner::scanPath(const QString& path, bool fullScan) {
+    if (!diskWatcher.directories().contains(path)) {
+        // run remove
+        pendingDeleted += cache.take(path);
+        return;
+    }
+
+    QStringList oldCache = fullScan ? QStringList{} : cache.value(path);
+    QStringList newCache;
+    auto&& entryInfoList = QDir(path).entryInfoList(mediaFileFilter,
+                                                    QDir::Files | QDir::NoDotAndDotDot);
+    for (auto& entry : entryInfoList) {
+        newCache += entry.absoluteFilePath();
+    }
+    cache.insert(path, newCache);
+
+    auto&& [added, removed] = diff(oldCache, newCache);
+    pendingCreated += added;
+    pendingDeleted += removed;
+}
+
+void DiskScanner::submitChange() {
+    if (pendingCreated.size() != 0) {
+        emit fileCreated(pendingCreated);
+        pendingCreated.clear();
+    }
+    if (pendingDeleted.size() != 0) {
+        emit fileDeleted(pendingDeleted);
+        pendingDeleted.clear();
+    }
+}
+
+DiskScanner::DiffResult DiskScanner::diff(const QStringList& oldv, const QStringList& newv) {
+    QSet olds(oldv.begin(), oldv.end());
+    QSet news(newv.begin(), newv.end());
+    DiffResult res;
+    res.added = [=]() {
+        auto res = news - olds;
+        return QStringList(res.begin(), res.end());
+    }();
+    res.removed = [=]() {
+        auto res = olds - news;
+        return QStringList(res.begin(), res.end());
+    }();
+    return res;
+}
