@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SAST-Gallery"
-#define MyAppVersion "0.1"
+#define MyAppVersion "${PROJECT_VERSION}"
 #define MyAppPublisher "NJUPT-SAST"
 #define MyAppURL "https://sast.fun"
 #define MyAppExeName "sast-gallery.exe"
