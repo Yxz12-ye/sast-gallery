@@ -1,9 +1,14 @@
 name: clang-tidy-review
 
 on:
+  push:
+    paths:
+      - "src/**"
+      - ".github/workflows/clang-tidy-review.yml"
   pull_request:
     paths:
       - 'src/**'
+      - ".github/workflows/clang-tidy-review.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +24,7 @@ jobs:
           submodules: recursive
         
       - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
+        uses: egor-tensin/setup-gcc@v1.3
         with:
           version: 14
           platform: x64
@@ -27,8 +32,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: 6.6.3
-          arch: gcc_64
+          version: 6.8.0
+          arch: linux_gcc_64
           cache: true
           cache-key-prefix: ${{ runner.os }}-qt
           modules: "qt5compat qtmultimedia"
@@ -37,7 +42,7 @@ jobs:
         uses: lukka/get-cmake@latest
 
       - name: CMake Generate
-        run: cmake -B build -S .
+        run: cmake --preset native
 
       - name: Run clang-tidy
         uses: ZedThree/clang-tidy-review@v0.19.0

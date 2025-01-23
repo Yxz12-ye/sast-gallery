@@ -1,17 +1,18 @@
 name: macOS
 on:
-    push:
-      paths:
-        - "src/**"
-        - "!**.md"
-        - "!**.cmake"
-        - ".github/**"
-    pull_request:
-      paths:
-        - "src/**"
-        - "!**.md"
-        - "!**.cmake"  
-    workflow_dispatch:
+  push:
+    paths:
+      - "src/**"
+      - "!**.md"
+      - "!**.cmake"
+      - ".github/workflows/macos.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "!**.md"
+      - "!**.cmake"
+      - ".github/workflows/macos.yml"  
+  workflow_dispatch:
     
 permissions: write-all
 
