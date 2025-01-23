@@ -1,10 +1,6 @@
 name: clang-tidy-review
 
 on:
-  push:
-    paths:
-      - "src/**"
-      - ".github/workflows/clang-tidy-review.yml"
   pull_request:
     paths:
       - 'src/**'
@@ -45,7 +41,7 @@ jobs:
         run: cmake --preset native
 
       - name: Run clang-tidy
-        uses: ZedThree/clang-tidy-review@v0.19.0
+        uses: ZedThree/clang-tidy-review@v0.20.1
         id: review
         with:
           build_dir: build
