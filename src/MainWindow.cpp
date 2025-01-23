@@ -37,8 +37,14 @@ void MainWindow::initContent() {
     QString settingPageKey;
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
 
+    
     // ViewingWindow for media
     auto* viewingWindow = new ViewingWindow();
     connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
-    viewingWindow->show();
+    viewingWindow->hide();
+    
+    // Add PageNode for showing ViewingWindow 
+    QWidget* viewingWindowWidget = viewingWindow;
+    addPageNode("Viewing", viewingWindowWidget, ElaIconType::Window);
+    connect(viewingWindowWidget, &QWidget::customContextMenuRequested, viewingWindow, &ViewingWindow::show);
 }

@@ -22,4 +22,5 @@ private:
     GalleryPage* galleryPage;
     SettingPage* settingPage;
     AboutPage* aboutPage;
+    
 };
