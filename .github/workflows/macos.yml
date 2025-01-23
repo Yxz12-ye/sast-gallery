@@ -1,0 +1,75 @@
+name: macOS
+on:
+    push:
+      paths:
+        - "src/**"
+        - "!**.md"
+        - "!**.cmake"
+        - ".github/**"
+    pull_request:
+      paths:
+        - "src/**"
+        - "!**.md"
+        - "!**.cmake"  
+    workflow_dispatch:
+    
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        qt_ver: [6.8.0]
+        qt_arch: [clang_64]
+    env:
+      targetName: sast_gallery
+      QT_MODULES: "qt5compat qtmultimedia"
+    steps:
+      - name: check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: setup Ninja
+        uses: ashutoshvarma/setup-ninja@v1.1
+        with:
+          version: "1.12.1"
+      
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_ver }}
+          cache: ${{ steps.cache-qt.outputs.cache-hit }}
+          arch: ${{ matrix.qt_arch }}
+          modules: ${{ env.QT_MODULES }}
+        
+      - name: CMake Build
+        run: |
+          ninja --version
+          cmake --version
+          cmake --preset native
+          cmake --build --preset native-release
+
+      - name: pakage
+        run: |
+          sudo find /Users/runner/work/sast-gallery/Qt/6.8.0/macos/qml -name "*.dSYM" | xargs rm -r
+          sudo macdeployqt build/Release/sast-gallery.app -qmldir=. -verbose=1 -dmg
+       
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.event.ref, 'refs/tags/')
+        with:
+          name: ${{ env.targetName }}_${{ matrix.os }}
+          path: build/Release/sast-gallery.app
+
+      - name: upload release
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/Release/sast-gallery.dmg
+          asset_name: ${{ env.targetName }}_mac.dmg
+          tag: ${{ github.ref }}
+          overwrite: true
+  
