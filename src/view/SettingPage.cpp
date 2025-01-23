@@ -33,7 +33,6 @@ SettingPage::SettingPage(QWidget* parent)
     themeSwitchLayout->addWidget(themeSwitchText);
     themeSwitchLayout->addStretch();
     themeSwitchLayout->addWidget(_themeComboBox);
-    _themeComboBox->setCurrentIndex(settings.value("theme").toString() == "light" ? 0 : 1);
     connect(_themeComboBox,
             QOverload<int>::of(&ElaComboBox::currentIndexChanged),
             this,
@@ -55,6 +54,7 @@ SettingPage::SettingPage(QWidget* parent)
         }
         _themeComboBox->blockSignals(false);
     });
+    _themeComboBox->setCurrentIndex(settings.value("theme").toString() == "light" ? 0 : 1);
 
     _micaSwitchButton = new ElaToggleSwitch(this);
     auto* micaSwitchArea = new ElaScrollPageArea(this);
@@ -65,11 +65,11 @@ SettingPage::SettingPage(QWidget* parent)
     micaSwitchLayout->addWidget(micaSwitchText);
     micaSwitchLayout->addStretch();
     micaSwitchLayout->addWidget(_micaSwitchButton);
-    _micaSwitchButton->setIsToggled(settings.value("micaEffect").toBool());
     connect(_micaSwitchButton, &ElaToggleSwitch::toggled, this, [=](bool checked) {
         eApp->setIsEnableMica(checked);
         settings.setValue("micaEffect", checked);
     });
+    _micaSwitchButton->setIsToggled(settings.value("micaEffect").toBool());
 
     _minimumButton = new ElaRadioButton("Minimum", this);
     _compactButton = new ElaRadioButton("Compact", this);
@@ -86,15 +86,6 @@ SettingPage::SettingPage(QWidget* parent)
     displayModeLayout->addWidget(_compactButton);
     displayModeLayout->addWidget(_maximumButton);
     displayModeLayout->addWidget(_autoButton);
-    if (settings.value("navigationBarDisplayMode").toInt() == 1) {
-        _minimumButton->setChecked(true);
-    } else if (settings.value("navigationBarDisplayMode").toInt() == 2) {
-        _compactButton->setChecked(true);
-    } else if (settings.value("navigationBarDisplayMode").toInt() == 3) {
-        _maximumButton->setChecked(true);
-    } else {
-        _autoButton->setChecked(true);
-    }
     connect(_minimumButton, &ElaRadioButton::toggled, this, [=](bool checked) {
         if (checked) {
             window->setNavigationBarDisplayMode(ElaNavigationType::Minimal);
@@ -119,6 +110,15 @@ SettingPage::SettingPage(QWidget* parent)
             settings.setValue("navigationBarDisplayMode", 0);
         }
     });
+    if (settings.value("navigationBarDisplayMode").toInt() == 1) {
+        _minimumButton->setChecked(true);
+    } else if (settings.value("navigationBarDisplayMode").toInt() == 2) {
+        _compactButton->setChecked(true);
+    } else if (settings.value("navigationBarDisplayMode").toInt() == 3) {
+        _maximumButton->setChecked(true);
+    } else {
+        _autoButton->setChecked(true);
+    }
 
     auto* functionsText = new ElaText("Functions", this);
     functionsText->setWordWrap(false);
