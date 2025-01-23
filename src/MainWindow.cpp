@@ -45,6 +45,6 @@ void MainWindow::initContent() {
     
     // Add PageNode for showing ViewingWindow 
     QWidget* viewingWindowWidget = viewingWindow;
-    addPageNode("Viewing", viewingWindowWidget, ElaIconType::Window);
+    addPageNode("ViewingMedia", viewingWindowWidget, ElaIconType::Window);
     connect(viewingWindowWidget, &QWidget::customContextMenuRequested, viewingWindow, &ViewingWindow::show);
 }
