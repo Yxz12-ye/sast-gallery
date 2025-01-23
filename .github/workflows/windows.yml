@@ -25,7 +25,6 @@ jobs:
           - qt_ver: 6.8.0
             qt_arch: win64_msvc2022_64
             msvc_arch: x64
-            qt_arch_isntall: msvc2022_64
     env: 
       targetName: sast-gallery.exe
       fileName: sast-gallery
@@ -55,17 +54,14 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.msvc_arch }}
           ninja --version
-          mkdir build
-          cd build
-          cmake -DCMAKE_MESSAGE_LOG_LEVEL=STATUS -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -GNinja ..
-          cmake --build . --target all --config Release --parallel
+          cmake --preset native
+          cmake --build --preset native-release
           echo winSdkDir=%WindowsSdkDir% >> %GITHUB_ENV%
           echo winSdkVer=%WindowsSdkVersion% >> %GITHUB_ENV%
           echo vcToolsInstallDir=%VCToolsInstallDir% >> %GITHUB_ENV%
           echo vcToolsRedistDir=%VCToolsRedistDir% >> %GITHUB_ENV%
     
       - name: package
-        if: startsWith(github.event.ref, 'refs/tags/')
         id: package      
         env:
           archiveName: ${{ env.fileName }}-${{ matrix.qt_arch }}
@@ -74,7 +70,8 @@ jobs:
         run: |
           & scripts\windows-publish.ps1 ${env:archiveName} ${env:targetName}
           $name = ${env:archiveName}
-          echo "::set-output name=packageName::$name"       
+          echo "::set-output name=packageName::$name"
+
       - uses: actions/upload-artifact@v4
         if: startsWith(github.event.ref, 'refs/tags/')
         with:
@@ -82,7 +79,6 @@ jobs:
           path: dist
             
       - name: inno setup install
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: zhuzichu520/inno-setup-action@v1.0.1
         with: 
           filepath: ./action-cli/InstallerScript.iss

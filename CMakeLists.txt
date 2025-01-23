@@ -12,13 +12,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 
 file(GLOB_RECURSE PROJECT_SOURCES
     src/*.cpp
     src/*.h
-    3rdpart/ElaWidgetTools/src/DeveloperComponents/*.cpp
 )
 
 qt_add_executable(sast-gallery
@@ -28,7 +27,8 @@ qt_add_executable(sast-gallery
     res/icon/app.rc
 )
 
-# Add ElaWidgetTools
+# Add ElaWidgetTools, use static library
+set(ELAWIDGETTOOLS_BUILD_STATIC_LIB ON CACHE BOOL "Build ElaWidgetTools as a static library")
 add_subdirectory(3rdpart/ElaWidgetTools)
 
 target_include_directories(sast-gallery PRIVATE
@@ -37,21 +37,13 @@ target_include_directories(sast-gallery PRIVATE
 )
 
 target_link_libraries(sast-gallery PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Multimedia
-    Qt${QT_VERSION_MAJOR}::MultimediaWidgets
+    Qt6::Widgets
+    Qt6::Multimedia
+    Qt6::MultimediaWidgets
     ElaWidgetTools
 )
 
-# copy ElaWidgetTools library to compile output dir, useful for vscode
-if(win32)
-    add_custom_command(TARGET sast-gallery POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:sast-gallery> $<TARGET_FILE:ElaWidgetTools>
-        COMMAND_EXPAND_LISTS
-    )
-endif()
-
-if(win32)
+if(WIN32)
   configure_file(
       ${CMAKE_SOURCE_DIR}/.cmake/InstallerScript.iss.in
       ${CMAKE_SOURCE_DIR}/action-cli/InstallerScript.iss

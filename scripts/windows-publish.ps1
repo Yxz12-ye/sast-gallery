@@ -23,8 +23,6 @@ function Main() {
     New-Item -ItemType Directory dist
     # 拷贝exe
     Copy-Item build\Release\* dist -Force -Recurse | Out-Null
-    # 拷贝ElaWidgetTools依赖
-    Copy-Item build\3rdpart\ElaWidgetTools\src\Release\* dist -Force -Recurse | Out-Null
     # 拷贝依赖
     windeployqt --no-translations --compiler-runtime dist\$targetName
     # 删除不必要的文件
