@@ -60,3 +60,6 @@ CMakeLists.txt.user
 
 # vscode
 .vscode
+
+# cmake install path
+install
