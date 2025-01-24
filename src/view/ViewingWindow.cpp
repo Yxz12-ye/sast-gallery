@@ -35,14 +35,14 @@ void ViewingWindow::initContent() {
 
     // Create buttons
     QHBoxLayout* buttonLayout = new QHBoxLayout(this);
-    ElaPushButton* rotateButton = new ElaPushButton("Rotate", this);
-    ElaPushButton* deleteButton = new ElaPushButton("Delete", this);
-    ElaPushButton* fileInfoButton = new ElaPushButton("File Info", this);
-    ElaPushButton* zoomInButton = new ElaPushButton("Zoom In", this);
-    ElaPushButton* zoomOutButton = new ElaPushButton("Zoom Out", this);
-    ElaPushButton* fullscreenButton = new ElaPushButton("Fullscreen", this);
-    ElaPushButton* zoom2originalButton = new ElaPushButton("Zoom to Original", this);
-    ElaPushButton* likeButton = new ElaPushButton("I Like it", this);
+    ElaIconButton* rotateButton = new ElaIconButton(ElaIconType::RotateRight);
+    ElaIconButton* deleteButton = new ElaIconButton(ElaIconType::TrashCan);
+    ElaIconButton* fileInfoButton = new ElaIconButton(ElaIconType::CircleInfo);
+    ElaIconButton* zoomInButton = new ElaIconButton(ElaIconType::MagnifyingGlassPlus);
+    ElaIconButton* zoomOutButton = new ElaIconButton(ElaIconType::MagnifyingGlassMinus);
+    ElaIconButton* fullscreenButton = new ElaIconButton(ElaIconType::ExpandWide);
+    ElaIconButton* zoom2originalButton = new ElaIconButton(ElaIconType::Expand);
+    ElaIconButton* likeButton = new ElaIconButton(ElaIconType::Heart);
 
     buttonLayout->addWidget(rotateButton);
     buttonLayout->addWidget(deleteButton);
