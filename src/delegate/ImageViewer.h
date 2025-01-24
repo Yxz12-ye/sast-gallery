@@ -3,23 +3,19 @@
 #include "utils/WindowOverlayWidget.h"
 #include <QImage>
 #include <QLabel>
-#include <QMediaMetaData>
-#include <QMediaPlayer>
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QVBoxLayout>
-#include <QVideoWidget>
 #include <QWheelEvent>
 
 // ref: https://doc.qt.io/qt-5/qtwidgets-widgets-imageviewer-example.html
 // TODO: implement me
 
-class MediaViewer : public WindowOverlayWidget {
+class ImageViewer : public WindowOverlayWidget {
     Q_OBJECT
 public:
-    MediaViewer(QWidget* parent = {});
+    ImageViewer(QWidget* parent = {});
     bool loadImage(const QString& path);
-    bool loadVideo(const QString& path);
 
 protected:
     void paintEvent(QPaintEvent*) override {
@@ -61,24 +57,11 @@ protected:
     virtual void rotateImage()=0; //only for images
 
     virtual void scaleImage(double factor)=0;//only for images
-
-    virtual void play()=0; //only for videos
-
-    virtual void pause()=0; //only for videos
-
-    virtual void setVolume(int volume)=0; //only for videos
-
-    virtual void mute()=0; //only for videos
-
-    virtual void unmute()=0; //only for videos
-
   */
 
 private:
     QImage image; //process image in RAM , then cast to QPixmap to QLabel for display
     QLabel* imageLabel;
-    QMediaPlayer* mediaPlayer;
-    QVideoWidget* videoWidget;
     QVBoxLayout* layout;
     QPoint dragPosition;
     double scaleFactor;
