@@ -3,6 +3,10 @@
 #include <ElaCustomWidget.h>
 #include <ElaMenu.h>
 #include <ElaMenuBar.h>
+#include <ElaPushButton.h>
+#include <ElaWidget.h>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 class ViewingWindow : public ElaCustomWidget {
     Q_OBJECT
 

@@ -43,15 +43,8 @@ void MainWindow::initContent() {
     // ViewingWindow for media
     auto* viewingWindow = new ViewingWindow();
     connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
-    viewingWindow->hide();
+    viewingWindow->show();
 
-    // Add PageNode for showing ViewingWindow
-    QWidget* viewingWindowWidget = viewingWindow;
-    addPageNode("ViewingMedia", viewingWindowWidget, ElaIconType::Window);
-    connect(viewingWindowWidget,
-            &QWidget::customContextMenuRequested,
-            viewingWindow,
-            &ViewingWindow::show);
 }
 
 void MainWindow::initModel() {
