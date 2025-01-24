@@ -20,13 +20,6 @@ void ViewingWindow::initContent() {
     auto* menuBar = new ElaMenuBar(this);
     menuBar->setObjectName("ViewingWindowMenuBar");
     menuBar->setFixedHeight(90);
-    ElaMenu* fileMenu = menuBar->addMenu(ElaIconType::File,"File");
+    ElaMenu* fileMenu = menuBar->addMenu(ElaIconType::File, "File");
     fileMenu->setMinimumSize(50, 25);
-    
-    
-    
-
-    
-    
-    
 }
