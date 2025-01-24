@@ -21,6 +21,9 @@ protected:
     void paintEvent(QPaintEvent*) override {
         // placeholder
         QPainter p{this};
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setRenderHint(QPainter::TextAntialiasing);
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.fillRect(rect(), {100, 100, 100, 128});
         p.setPen({200, 200, 255});
         p.setFont({"arial,helvetica", 48});
