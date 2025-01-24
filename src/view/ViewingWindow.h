@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ElaCustomWidget.h>
+#include <ElaIconButton.h>
 #include <ElaMenu.h>
 #include <ElaMenuBar.h>
 #include <ElaPushButton.h>
