@@ -44,7 +44,6 @@ void MainWindow::initContent() {
     auto* viewingWindow = new ViewingWindow();
     connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
     viewingWindow->show();
-
 }
 
 void MainWindow::initModel() {

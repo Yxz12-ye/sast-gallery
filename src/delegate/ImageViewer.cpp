@@ -22,5 +22,5 @@ bool ImageViewer::loadImage(const QString& path) {
 
     } catch (std::exception& err) {
         return false;
-        }
+    }
 }
