@@ -1,5 +1,6 @@
 #pragma once
 #include "BasePage.h"
+#include <ElaScrollPageArea.h>
 
 class AboutPage : public BasePage {
     Q_OBJECT
@@ -8,5 +9,6 @@ public:
     ~AboutPage();
 
 private:
-    ElaText* createText(const QString& text, int size);
+    ElaScrollPageArea* createTextContent(QString label, QString content);
+    ElaScrollPageArea* createLinkContent(QString label, QString link);
 };
