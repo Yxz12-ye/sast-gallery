@@ -73,6 +73,7 @@ target_link_libraries(sast-gallery PRIVATE
     Qt6::Multimedia
     Qt6::MultimediaWidgets
     ElaWidgetTools
+    version::version
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

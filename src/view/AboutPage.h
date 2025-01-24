@@ -6,4 +6,6 @@ class AboutPage : public BasePage {
 public:
     explicit AboutPage(QWidget* parent = nullptr);
     ~AboutPage();
+private:
+    ElaText* createText(const QString& text, int size);
 };
