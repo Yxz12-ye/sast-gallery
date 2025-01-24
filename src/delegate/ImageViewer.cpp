@@ -6,7 +6,6 @@ ImageViewer::ImageViewer(QWidget* parent)
     , scaleFactor(1.0) {
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint);
-    
 }
 
 bool ImageViewer::loadImage(const QString& path) {
