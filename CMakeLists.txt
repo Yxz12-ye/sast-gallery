@@ -52,7 +52,6 @@ file(GLOB_RECURSE PROJECT_SOURCES
 qt_add_executable(sast-gallery MACOSX_BUNDLE
     ${${PROJECT_NAME}_MAC_ICON}
     ${PROJECT_SOURCES}
-    3rdpart/ElaWidgetTools/src/include/ElaWidgetTools.qrc
     res/res.qrc
     res/icon/app.rc
     ${VERSION_RC_PATH}
