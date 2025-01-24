@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(WIN32)
   set(VERSION_RC_PATH ${CMAKE_SOURCE_DIR}/sast-gallery-version.rc)
+  set(WIN32_MANIFEST_PATH ${CMAKE_SOURCE_DIR}/app.manifest)
   configure_file(
       ${CMAKE_SOURCE_DIR}/.cmake/version_exe.rc.in
       ${VERSION_RC_PATH}
@@ -55,6 +56,7 @@ qt_add_executable(sast-gallery MACOSX_BUNDLE
     res/res.qrc
     res/icon/app.rc
     ${VERSION_RC_PATH}
+    ${WIN32_MANIFEST_PATH}
 )
 
 # Add ElaWidgetTools, use static library
