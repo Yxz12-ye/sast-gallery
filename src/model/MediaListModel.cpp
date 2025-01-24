@@ -43,6 +43,7 @@ Qt::ItemFlags MediaListModel::flags(const QModelIndex& index) const {
     case Property::IsFavorite:
         return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
     }
+    return Qt::ItemIsEnabled;
 }
 
 QVariant MediaListModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -57,6 +58,7 @@ QVariant MediaListModel::headerData(int section, Qt::Orientation orientation, in
     case Property::IsFavorite:
         return "IsFavorite";
     }
+    return {};
 }
 
 bool MediaListModel::setData(const QModelIndex& index, const QVariant& value, int role) {

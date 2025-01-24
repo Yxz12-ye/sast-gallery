@@ -1,20 +1,15 @@
 #include "GalleryPage.h"
-#include "utils/MediaPreview.h"
+#include "utils/GalleryWidget.h"
+#include <QListView>
 
-GalleryPage::GalleryPage(QWidget* parent)
+GalleryPage::GalleryPage(QAbstractItemModel* model, QWidget* parent)
     : BasePage(parent) {
     setWindowTitle("Gallery");
 
-    // page root
-    centralWidget = new QWidget(this);
+    auto* centralWidget = new GalleryWidget(model);
     centralWidget->setWindowTitle("Gallery");
-    centralWidget->setSizePolicy(QSizePolicy::Policy::Ignored,
-                                 centralWidget->sizePolicy().verticalPolicy());
+
     addCentralWidget(centralWidget);
-
-    centralLayout = new MediaFlexLayout(centralWidget);
-
-    // centralLayout->addWidget(new MediaPreview())
 }
 
 GalleryPage::~GalleryPage() {}

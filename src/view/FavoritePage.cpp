@@ -1,15 +1,14 @@
 #include "FavoritePage.h"
+#include "utils/GalleryWidget.h"
 #include <ElaText.h>
 
-FavoritePage::FavoritePage(QWidget* parent)
+FavoritePage::FavoritePage(QAbstractItemModel* model, QWidget* parent)
     : BasePage(parent) {
     setWindowTitle("Favorite");
 
-    // page root
-    auto* centralWidget = new QWidget(this);
+    auto* centralWidget = new GalleryWidget(model);
     centralWidget->setWindowTitle("Favorite");
-    centralWidget->setSizePolicy(QSizePolicy::Policy::Ignored,
-                                 centralWidget->sizePolicy().verticalPolicy());
+
     addCentralWidget(centralWidget);
 }
 

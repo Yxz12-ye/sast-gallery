@@ -15,7 +15,7 @@ public:
     // supposed to call scan() after:
     // - construct
     // - modify path through addPath(s)
-    // PS: remove path will also remove scanned image from model
+    // remove path will also remove scanned image from model
 
     // recursively init path and subfolder
     void addPath(const QString& path);
@@ -55,7 +55,7 @@ private:
 
     // work with scan() and scanPath(), as scan cache
     QStringList pendingCreated, pendingDeleted;
-    void submitChange();
+    void submitChange(bool fullScan = false);
 
     // QDir name filter
     static const inline QStringList mediaFileFilter = {

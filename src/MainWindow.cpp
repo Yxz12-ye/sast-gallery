@@ -1,10 +1,13 @@
 #include "MainWindow.h"
+#include "delegate/DiskScanner.h"
+#include "model/MediaListModel.h"
 #include "utils/Settings.hpp"
 #include "view/ViewingWindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent) {
     initWindow();
+    initModel();
     initContent();
     moveToCenter();
 }
@@ -23,10 +26,10 @@ void MainWindow::initWindow() {
 
 void MainWindow::initContent() {
     // pages
-    galleryPage = new GalleryPage(this);
+    galleryPage = new GalleryPage(galleryModel, this);
     addPageNode("Gallery", galleryPage, ElaIconType::Images);
 
-    favoritePage = new FavoritePage(this);
+    favoritePage = new FavoritePage(favoriteModel, this);
     addPageNode("Favourites", favoritePage, ElaIconType::Heart);
 
     aboutPage = new AboutPage(this);
@@ -49,4 +52,26 @@ void MainWindow::initContent() {
             &QWidget::customContextMenuRequested,
             viewingWindow,
             &ViewingWindow::show);
+}
+
+void MainWindow::initModel() {
+    mediaModel = new MediaListModel();
+
+    galleryModel = new QSortFilterProxyModel();
+    galleryModel->setSourceModel(mediaModel);
+    galleryModel->sort(MediaListModel::LastModifiedTime);
+
+    favoriteModel = new QSortFilterProxyModel();
+    favoriteModel->setSourceModel(galleryModel);
+    favoriteModel->setFilterKeyColumn(MediaListModel::IsFavorite);
+    favoriteModel->setFilterFixedString("true");
+
+    diskScanner = new DiskScanner;
+    // clang-format off
+    QObject::connect(diskScanner, &DiskScanner::fileCreated, mediaModel, &MediaListModel::appendEntries);
+    QObject::connect(diskScanner, &DiskScanner::fileDeleted, mediaModel, &MediaListModel::removeEntries);
+    QObject::connect(diskScanner, &DiskScanner::fileModified, mediaModel, &MediaListModel::modifiedEntries);
+    QObject::connect(diskScanner, &DiskScanner::fullScan, mediaModel, &MediaListModel::resetEntries);
+    // clang-format on
+    diskScanner->scan();
 }

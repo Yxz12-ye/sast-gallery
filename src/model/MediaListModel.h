@@ -8,7 +8,6 @@
 // TODO: load & save favorite data from disk
 class MediaListModel : public QAbstractTableModel {
     Q_OBJECT
-    enum Property { Path = 0, LastModifiedTime = 1, IsFavorite = 2 };
 
     QList<QString> path;
     QList<QDateTime> lastModifiedTime;
@@ -24,6 +23,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+
+    enum Property { Path = 0, LastModifiedTime = 1, IsFavorite = 2 };
+
+public slots:
 
     // for signals from disk scanner
     void resetEntries(const QStringList& paths);

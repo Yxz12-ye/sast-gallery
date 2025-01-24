@@ -42,7 +42,7 @@ if(APPLE)
 endif()
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets Concurrent)
 
 file(GLOB_RECURSE PROJECT_SOURCES
     src/*.cpp
@@ -72,6 +72,7 @@ target_link_libraries(sast-gallery PRIVATE
     Qt6::Widgets
     Qt6::Multimedia
     Qt6::MultimediaWidgets
+    Qt6::Concurrent
     ElaWidgetTools
     version::version
 )

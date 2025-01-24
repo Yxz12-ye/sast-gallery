@@ -15,7 +15,6 @@ class MediaFlexLayout : public QLayout {
     };
 
     int preferredLineHeight = 180;
-    QList<LayoutData> itemLayoutData;
 
 public:
     explicit MediaFlexLayout(QWidget* parent = nullptr);
@@ -32,9 +31,12 @@ public:
     QLayoutItem* itemAt(int index) const override;
     QLayoutItem* takeAt(int index) override;
 
+    void insertWidget(QWidget* widget, qsizetype index);
+
     bool hasHeightForWidth() const override;
     int heightForWidth(int) const override;
 
 private:
     int layoutItems(const QRect& rect, bool dryRun = false) const;
+    LayoutData itemLayoutData(qsizetype i) const;
 };

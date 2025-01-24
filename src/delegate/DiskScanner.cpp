@@ -78,10 +78,13 @@ QStringList DiskScanner::path() {
 }
 
 void DiskScanner::scan(bool fullScan) {
+    static bool isInitScan = true;
+    fullScan = fullScan || isInitScan;
+    isInitScan = false;
     for (auto& path : diskWatcher.directories()) {
         scanPath(path, fullScan);
     }
-    submitChange();
+    submitChange(fullScan);
 }
 
 void DiskScanner::scanPath(const QString& path, bool fullScan) {
@@ -91,6 +94,7 @@ void DiskScanner::scanPath(const QString& path, bool fullScan) {
         return;
     }
 
+    qDebug() << "DiskScanner: scaning " << path;
     QStringList oldCache = fullScan ? QStringList{} : cache.value(path);
     QStringList newCache;
     auto&& entryInfoList = QDir(path).entryInfoList(mediaFileFilter,
@@ -105,7 +109,13 @@ void DiskScanner::scanPath(const QString& path, bool fullScan) {
     pendingDeleted += removed;
 }
 
-void DiskScanner::submitChange() {
+void DiskScanner::submitChange(bool fullScan) {
+    if (fullScan) {
+        emit DiskScanner::fullScan(pendingCreated);
+        pendingCreated.clear();
+        pendingDeleted.clear();
+        return;
+    }
     if (pendingCreated.size() != 0) {
         emit fileCreated(pendingCreated);
         pendingCreated.clear();

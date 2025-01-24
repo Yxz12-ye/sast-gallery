@@ -37,11 +37,7 @@ Qt::Orientations MediaFlexLayout::expandingDirections() const {
 
 void MediaFlexLayout::addItem(QLayoutItem* item) {
     itemList.append(item);
-
-    LayoutData data;
-    auto itemSize = item->sizeHint();
-    data.radio = double(itemSize.width()) / double(itemSize.height());
-    itemLayoutData.append(data);
+    layoutItems(geometry());
 }
 
 int MediaFlexLayout::count() const {
@@ -54,10 +50,17 @@ QLayoutItem* MediaFlexLayout::itemAt(int index) const {
 
 QLayoutItem* MediaFlexLayout::takeAt(int index) {
     if (index >= 0 && index < itemList.size()) {
-        itemLayoutData.takeAt(index);
-        return itemList.takeAt(index);
+        auto&& res = itemList.takeAt(index);
+        layoutItems(geometry());
+        return res;
     }
     return nullptr;
+}
+
+void MediaFlexLayout::insertWidget(QWidget* widget, qsizetype index) {
+    addChildWidget(widget);
+    itemList.insert(index, new QWidgetItemV2(widget));
+    layoutItems(geometry());
 }
 
 bool MediaFlexLayout::hasHeightForWidth() const {
@@ -95,7 +98,7 @@ int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
             if (endItem >= itemList.size()) {
                 break;
             }
-            sumRatio += itemLayoutData.value(endItem).radio;
+            sumRatio += itemLayoutData(endItem).radio;
             lineHeight = (effectiveRect.width() - spacing() * (endItem - startItem)) / sumRatio;
         }
         lineHeight = previousLineHeight;
@@ -105,14 +108,17 @@ int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
         if (endItem < startItem) {
             endItem = startItem;
             lineHeight = (effectiveRect.width() - spacing() * (endItem - startItem))
-                         / itemLayoutData.value(endItem).radio;
+                         / itemLayoutData(endItem).radio;
+        }
+        if (endItem == itemList.size() - 1 && lineHeight > preferredLineHeight) {
+            lineHeight = preferredLineHeight;
         }
 
         // set widgets
         int x = effectiveRect.x();
         for (int i = startItem; i <= endItem; i++) {
             auto widget = itemList.value(i)->widget();
-            auto width = itemLayoutData.value(i).radio * lineHeight;
+            auto width = itemLayoutData(i).radio * lineHeight;
             if (!dryRun) {
                 widget->setGeometry(x, y, width, lineHeight);
             }
@@ -124,4 +130,9 @@ int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
 
     // return content height for other function
     return y - spacing() + bottom;
+}
+
+MediaFlexLayout::LayoutData MediaFlexLayout::itemLayoutData(qsizetype i) const {
+    auto itemSize = itemList.at(i)->sizeHint();
+    return {.radio = double(itemSize.width()) / double(itemSize.height())};
 }
