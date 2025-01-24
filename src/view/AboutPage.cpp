@@ -72,17 +72,15 @@ ElaScrollPageArea* AboutPage::createLinkContent(QString label, QString link) {
     auto* linkText = new ElaText(QString("<a style='color: #D0BCFF' href = \"%1\">%1").arg(link),
                                  this);
     auto* copyButton = new ElaIconButton(ElaIconType::Copy, 15, 15, 15, this);
-    auto* linkLayout = new QHBoxLayout(area);
     labelText->setWordWrap(false);
     labelText->setTextPixelSize(15);
     linkText->setWordWrap(false);
     linkText->setTextPixelSize(15);
     linkText->setOpenExternalLinks(true);
-    linkLayout->addWidget(copyButton);
-    linkLayout->addWidget(linkText);
     layout->addWidget(labelText);
     layout->addStretch();
-    layout->addLayout(linkLayout);
+    layout->addWidget(copyButton);
+    layout->addWidget(linkText);
     connect(copyButton, &QPushButton::clicked, [=]() {
         QApplication::clipboard()->setText(link);
         ElaMessageBar::success(ElaMessageBarType::BottomRight, "Copied!", nullptr, 2000);
