@@ -1,23 +1,28 @@
 #pragma once
 
 #include "BasePage.h"
-class ElaRadioButton;
-class ElaToggleSwitch;
-class ElaComboBox;
+#include <ElaScrollPageArea.h>
+#include <ElaText.h>
+#include <QHBoxLayout>
 
 class SettingPage : public BasePage {
     Q_OBJECT
 public:
     explicit SettingPage(QWidget* parent = nullptr);
-    ~SettingPage();
 
 private:
-    ElaComboBox* _themeComboBox{nullptr};
-    ElaComboBox* _wheelBehaviorComboBox{nullptr};
-    ElaToggleSwitch* _deletionSwitchButton{nullptr};
-    ElaToggleSwitch* _micaSwitchButton{nullptr};
-    ElaRadioButton* _minimumButton{nullptr};
-    ElaRadioButton* _compactButton{nullptr};
-    ElaRadioButton* _maximumButton{nullptr};
-    ElaRadioButton* _autoButton{nullptr};
+    template<typename... Widget>
+    ElaScrollPageArea* createScrollPageArea(const QString& label, Widget*... widgets)
+        requires(std::is_base_of_v<QWidget, Widget> && ...)
+    {
+        auto* area = new ElaScrollPageArea(this);
+        auto* layout = new QHBoxLayout(area);
+        auto* labelText = new ElaText(label, this);
+        labelText->setWordWrap(false);
+        labelText->setTextPixelSize(15);
+        layout->addWidget(labelText);
+        layout->addStretch();
+        (layout->addWidget(widgets), ...);
+        return area;
+    }
 };
