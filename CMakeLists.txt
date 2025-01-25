@@ -59,7 +59,7 @@ qt_add_executable(sast-gallery MACOSX_BUNDLE
 )
 
 # Add ElaWidgetTools, use static library
-set(ELAWIDGETTOOLS_BUILD_STATIC_LIB ON CACHE BOOL "Build ElaWidgetTools as a static library")
+set(ELAWIDGETTOOLS_BUILD_STATIC_LIB "STATIC" CACHE STRING "Build ElaWidgetTools as a static library")
 add_subdirectory(3rdpart/ElaWidgetTools)
 
 target_include_directories(sast-gallery PRIVATE
