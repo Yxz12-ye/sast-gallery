@@ -25,8 +25,7 @@ bool ImageViewer::loadImagefrompath(const QString& path) {
             imageLabel->setScaledContents(true);
         }
         return true;
-    }
-    catch (...) {
+    } catch (...) {
         return false;
     }
 }
@@ -46,25 +45,25 @@ bool ImageViewer::loadImage(const QImage& image) {
         return false;
     }
 }
-    const QString& ImageViewer::getImagePath() {
-        static QString imagePath;
-        imagePath = QFileDialog::getOpenFileName(nullptr,
-                                                 "Choose Image File",
-                                                 "",
-                                                 "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
-        return imagePath;
-    }
+const QString& ImageViewer::getImagePath() {
+    static QString imagePath;
+    imagePath = QFileDialog::getOpenFileName(nullptr,
+                                             "Choose Image File",
+                                             "",
+                                             "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
+    return imagePath;
+}
 
-    void ImageViewer::openImageFileDialog() {
-        QString imagePath = getImagePath();
-        if (!imagePath.isEmpty()) {
-            loadImagefrompath(imagePath);
-        }
+void ImageViewer::openImageFileDialog() {
+    QString imagePath = getImagePath();
+    if (!imagePath.isEmpty()) {
+        loadImagefrompath(imagePath);
     }
+}
 
-    void ImageViewer::updateDisplaydImage() {
-        if (imageLabel) {
-            imageLabel->setPixmap(QPixmap::fromImage(this->image));
-            imageLabel->setScaledContents(true);
-        }
+void ImageViewer::updateDisplaydImage() {
+    if (imageLabel) {
+        imageLabel->setPixmap(QPixmap::fromImage(this->image));
+        imageLabel->setScaledContents(true);
     }
+}
