@@ -28,8 +28,10 @@ public:
     bool isFavorite();
 
 public slots:
-
     void loadImageComplete();
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
 private:
     QString filepath;

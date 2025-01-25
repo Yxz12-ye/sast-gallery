@@ -6,9 +6,11 @@
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>
+#include <QFileInfo>
 
-ViewingWindow::ViewingWindow(QWidget* parent)
-    : ElaCustomWidget(parent) {
+ViewingWindow::ViewingWindow(QString filepath, QWidget* parent)
+    : filepath(std::move(filepath))
+    , ElaCustomWidget(parent) {
     initWindow();
     initContent();
 }
@@ -50,9 +52,9 @@ void ViewingWindow::initContent() {
     ElaGraphicsScene* scene = new ElaGraphicsScene(this);
     scene->setSceneRect(0, 0, 500, 500);
     ElaGraphicsItem* item1 = new ElaGraphicsItem();
-    item1->setItemImage(QImage(":/res/icon/app_icon.svg"));
-    item1->setWidth(100);
-    item1->setHeight(100);
+    item1->setItemImage(QImage(filepath));
+    item1->setWidth(400);
+    item1->setHeight(400);
     scene->addItem(item1);
     ElaGraphicsView* view = new ElaGraphicsView(scene);
     view->setScene(scene);
@@ -73,9 +75,8 @@ void ViewingWindow::initContent() {
     dividerText1->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     dividerText1->setTextPixelSize(14);
 
-    ElaText* fileInfoBriefText = new ElaText("1920 x 1080 1.2MB", this);
-
-    fileInfoBriefText->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    ElaText* fileInfoBriefText = new ElaText(getBriefFileInfo(filepath), this);
+    fileInfoBriefText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     fileInfoBriefText->setTextPixelSize(14);
 
     ElaIconButton* zoomInButton = new ElaIconButton(ElaIconType::MagnifyingGlassPlus);
@@ -175,4 +176,23 @@ void ViewingWindow::initContent() {
     connect(scene, &ElaGraphicsScene::mouseLeftClickedItem, this, [=](ElaGraphicsItem* item) {
         qDebug() << "Scene now displays image";
     });
+}
+
+QString ViewingWindow::getBriefFileInfo(QString filepath) {
+    QFileInfo fileInfo(filepath);
+    auto size = static_cast<double>(fileInfo.size());
+    QString unit[] = {"B", "KB", "MB", "GB"};
+    int unitIndex = 0;
+    for (; unitIndex < 3; unitIndex++) {
+        if (size < 1024) {
+            break;
+        }
+        size /= 1024;
+        // save one decimal place
+        size = static_cast<int>(size * 10) / 10.0;
+    }
+    QString width = QString::number(QImage(filepath).width());
+    QString height = QString::number(QImage(filepath).height());
+    QString sizeStr = QString("%1 %2").arg(QString::number(size), unit[unitIndex]);
+    return QString("%1 x %2 %3").arg(width, height, sizeStr);
 }

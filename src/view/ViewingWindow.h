@@ -12,9 +12,14 @@ class ViewingWindow : public ElaCustomWidget {
     Q_OBJECT
 
 public:
-    explicit ViewingWindow(QWidget* parent = nullptr);
+    explicit ViewingWindow(QString filepath, QWidget* parent = nullptr);
     ~ViewingWindow();
 
     void initWindow();
     void initContent();
+
+private:
+    QString filepath;
+
+    QString getBriefFileInfo(QString filepath);
 };

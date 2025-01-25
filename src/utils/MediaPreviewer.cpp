@@ -65,6 +65,10 @@ void MediaPreviewer::loadImageComplete() {
     setPixmap(imageLoadWatcher.result());
 }
 
+void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
+    // TODO: open the image in a ViewingWindow
+}
+
 QPixmap MediaPreviewer::loadImage() {
     QImageReader reader(filepath);
     reader.setScaledSize(QSize{0, 180});

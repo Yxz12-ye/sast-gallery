@@ -41,7 +41,7 @@ void MainWindow::initContent() {
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
 
     // ViewingWindow for media
-    auto* viewingWindow = new ViewingWindow();
+    auto* viewingWindow = new ViewingWindow(":/res/icon/app_icon.svg");
     connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
     viewingWindow->show();
 }
