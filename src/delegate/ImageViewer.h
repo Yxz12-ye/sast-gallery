@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/WindowOverlayWidget.h"
+#include <QFileDialog>
 #include <QImage>
 #include <QLabel>
 #include <QMouseEvent>
@@ -15,7 +16,11 @@ class ImageViewer : public WindowOverlayWidget {
     Q_OBJECT
 public:
     ImageViewer(QWidget* parent = {});
-    bool loadImage(const QString& path);
+    bool loadImagefrompath(const QString& path);
+    bool loadImage(const QImage& image);
+    static inline const QString& getImagePath();
+    void openImageFileDialog();
+    ~ImageViewer() = default;
 
 protected:
     void paintEvent(QPaintEvent*) override {
@@ -68,4 +73,5 @@ private:
     QVBoxLayout* layout;
     QPoint dragPosition;
     double scaleFactor;
+    void updateDisplaydImage();
 };

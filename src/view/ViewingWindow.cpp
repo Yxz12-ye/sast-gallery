@@ -6,7 +6,6 @@
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>
-#include <QFileInfo>
 
 ViewingWindow::ViewingWindow(QString filepath, QWidget* parent)
     : filepath(std::move(filepath))
@@ -24,16 +23,18 @@ void ViewingWindow::initWindow() {
 
 void ViewingWindow::initContent() {
     // TODO: implement this to display images mimicking Windows Photo Viewer's UI
-
+    imageViewer = new ImageViewer(this);
     QVBoxLayout* viewLayout = new QVBoxLayout(this);
-
+    viewLayout->addWidget(imageViewer);
     // Create menu bar
     ElaMenuBar* menuBar = new ElaMenuBar(this);
+
     QAction* rotateAction = menuBar->addElaIconAction(ElaIconType::RotateRight, "rotate");
     QAction* deleteAction = menuBar->addElaIconAction(ElaIconType::TrashCan, "delete");
     QAction* printAction = menuBar->addElaIconAction(ElaIconType::Print, "print");
     QAction* editAction = menuBar->addElaIconAction(ElaIconType::Pen, "edit");
     ElaMenu* fileMenu = menuBar->addMenu(ElaIconType::Ellipsis, nullptr);
+
     QAction* openFileAction = fileMenu->addAction("Open");
     QAction* copyFileAction = fileMenu->addAction("Copy");
     QAction* saveasFileAction = fileMenu->addAction("Save As");
@@ -59,6 +60,7 @@ void ViewingWindow::initContent() {
     ElaGraphicsView* view = new ElaGraphicsView(scene);
     view->setScene(scene);
     view->setFixedHeight(600);
+
     QVBoxLayout* graphicsLayout = new QVBoxLayout();
     graphicsLayout->addWidget(view);
 
@@ -140,8 +142,14 @@ void ViewingWindow::initContent() {
     fullscreenButton->setStatusTip("Fullscreen");
     zoom2originalButton->setStatusTip("Zoom to original size");
 
+    ZoomableGraphicsView* zoomableGraphicsView = new ZoomableGraphicsView(scene);
+    view->setFixedHeight(600);
+    graphicsLayout->addWidget(view);
+
     // connect to actions
-    connect(openFileAction, &QAction::triggered, this, [=]() { qDebug() << "Open file clicked"; });
+    connect(openFileAction, &QAction::triggered, this, [=]() {
+        imageViewer->openImageFileDialog();
+    });
     connect(copyFileAction, &QAction::triggered, this, [=]() { qDebug() << "Copy file clicked"; });
     connect(saveasFileAction, &QAction::triggered, this, [=]() {
         qDebug() << "Save as file clicked";

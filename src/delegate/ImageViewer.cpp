@@ -6,20 +6,65 @@ ImageViewer::ImageViewer(QWidget* parent)
     , scaleFactor(1.0) {
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint);
+    imageLabel = new QLabel(this);
+    layout->addWidget(imageLabel);
 }
 
-bool ImageViewer::loadImage(const QString& path) {
+bool ImageViewer::loadImagefrompath(const QString& path) {
     try {
-        image.load(path);
-        if (image.isNull()) {
+        if (path.isEmpty()) {
             return false;
         }
-        imageLabel = new QLabel(this);
-        imageLabel->setPixmap(QPixmap::fromImage(image));
-        layout->addWidget(imageLabel);
+        QImage loaded(path);
+        if (loaded.isNull()) {
+            return false;
+        }
+        image = loaded;
+        if (imageLabel) {
+            imageLabel->setPixmap(QPixmap::fromImage(image));
+            imageLabel->setScaledContents(true);
+        }
         return true;
-
-    } catch (std::exception& err) {
+    }
+    catch (...) {
         return false;
     }
 }
+bool ImageViewer::loadImage(const QImage& image) {
+    try {
+        if (image.isNull()) {
+            return false;
+        }
+        this->image = image;
+        if (imageLabel) {
+            imageLabel->setPixmap(QPixmap::fromImage(this->image));
+            imageLabel->setScaledContents(true);
+        }
+        return true;
+
+    } catch (...) {
+        return false;
+    }
+}
+    const QString& ImageViewer::getImagePath() {
+        static QString imagePath;
+        imagePath = QFileDialog::getOpenFileName(nullptr,
+                                                 "Choose Image File",
+                                                 "",
+                                                 "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
+        return imagePath;
+    }
+
+    void ImageViewer::openImageFileDialog() {
+        QString imagePath = getImagePath();
+        if (!imagePath.isEmpty()) {
+            loadImagefrompath(imagePath);
+        }
+    }
+
+    void ImageViewer::updateDisplaydImage() {
+        if (imageLabel) {
+            imageLabel->setPixmap(QPixmap::fromImage(this->image));
+            imageLabel->setScaledContents(true);
+        }
+    }
