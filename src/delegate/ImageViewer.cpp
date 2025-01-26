@@ -72,6 +72,16 @@ void ImageViewer::openImageFileDialog() {
     }
 }
 
+void ImageViewer::saveImageFileDialog() {
+    QString imagePath
+        = QFileDialog::getSaveFileName(nullptr,
+                                       "Save Image File",
+                                       "",
+                                       "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
+    if (!imagePath.isEmpty()) {
+        this->image.save(imagePath);
+    }
+}
 void ImageViewer::updateDisplaydImage() {
     if (imageLabel) {
         imageLabel->setPixmap(QPixmap::fromImage(this->image));

@@ -153,7 +153,7 @@ void ViewingWindow::initContent() {
         imageViewer->copyImageToClipboard();
     });
     connect(saveasFileAction, &QAction::triggered, this, [=]() {
-        qDebug() << "Save as file clicked";
+        imageViewer->saveImageFileDialog();
     });
     connect(openInFileExplorerAction, &QAction::triggered, this, [=]() {
         qDebug() << "Open in file explorer clicked";

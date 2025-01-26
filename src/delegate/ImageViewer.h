@@ -23,6 +23,7 @@ public:
     static inline const QString& getImagePath();
     bool copyImageToClipboard();
     void openImageFileDialog();
+    void saveImageFileDialog();
     ~ImageViewer() = default;
 
 protected:
