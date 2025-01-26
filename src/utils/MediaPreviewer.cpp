@@ -1,5 +1,8 @@
 #include "MediaPreviewer.h"
 #include <QImageReader>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPixmap>
 #include <QtConcurrentRun>
 
 MediaPreviewer::MediaPreviewer(QString filepath, QDateTime time, bool isFavorite, QWidget* parent)
@@ -14,6 +17,7 @@ MediaPreviewer::MediaPreviewer(QString filepath, QDateTime time, bool isFavorite
     setScaledContents(true);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     initMedia();
+    qDebug() << "load image" << this->filepath;
 }
 
 MediaPreviewer::~MediaPreviewer() {}
@@ -61,8 +65,21 @@ void MediaPreviewer::initMedia() {
     requireReloadImage = true;
 }
 
+QPixmap MediaPreviewer::roundedPixmap(const QPixmap& original, int radius) {
+    QPixmap target = QPixmap(original.size());
+    target.fill(Qt::transparent);
+    QPainter painter(&target);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    QPainterPath path = QPainterPath();
+    path.addRoundedRect(target.rect(), 4, 4);
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, original);
+    return target;
+}
+
 void MediaPreviewer::loadImageComplete() {
-    setPixmap(imageLoadWatcher.result());
+    setPixmap(roundedPixmap(QPixmap(imageLoadWatcher.result()), 4));
 }
 
 void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {

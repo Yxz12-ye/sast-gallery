@@ -44,5 +44,6 @@ private:
     QFutureWatcher<QPixmap> imageLoadWatcher;
 
     void initMedia();
+    QPixmap roundedPixmap(const QPixmap& original, int radius);
     QPixmap loadImage();
 };
