@@ -7,6 +7,9 @@
 #include <ElaSlider.h>
 #include <ElaText.h>
 #include <model/MediaListModel.h>
+#include <qdir.h>
+#include <qfileinfo.h>
+#include <utils/Tools.h>
 
 ViewingWindow::ViewingWindow(QAbstractItemModel* model, int index, QWidget* parent)
     : ElaCustomWidget(parent)
@@ -81,7 +84,11 @@ void ViewingWindow::initContent() {
     dividerText1->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     dividerText1->setTextPixelSize(14);
 
-    ElaText* fileInfoBriefText = new ElaText(briefFileInfo(), this);
+    ElaText* fileInfoBriefText = new ElaText(QString("%1 x %2 %3")
+                                                 .arg(QString::number(QImage(filepath).width()))
+                                                 .arg(QString::number(QImage(filepath).height()))
+                                                 .arg(Tools::fileSizeString(filepath)),
+                                             this);
     fileInfoBriefText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     fileInfoBriefText->setTextPixelSize(14);
 
@@ -208,23 +215,4 @@ void ViewingWindow::initContent() {
     connect(scene, &ElaGraphicsScene::mouseLeftClickedItem, this, [=](ElaGraphicsItem* item) {
         qDebug() << "Scene now displays image";
     });
-}
-
-QString ViewingWindow::briefFileInfo() {
-    QFileInfo fileInfo(filepath);
-    auto size = static_cast<double>(fileInfo.size());
-    QString unit[] = {"B", "KB", "MB", "GB"};
-    int unitIndex = 0;
-    for (; unitIndex < 3; unitIndex++) {
-        if (size < 1024) {
-            break;
-        }
-        size /= 1024;
-        // save one decimal place
-        size = static_cast<int>(size * 10) / 10.0;
-    }
-    QString width = QString::number(QImage(filepath).width());
-    QString height = QString::number(QImage(filepath).height());
-    QString sizeStr = QString("%1 %2").arg(QString::number(size), unit[unitIndex]);
-    return QString("%1 x %2 %3").arg(width, height, sizeStr);
 }

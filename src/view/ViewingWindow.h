@@ -14,7 +14,6 @@
 #include <ElaText.h>
 #include <ElaWidget.h>
 #include <QAbstractItemModel>
-#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QWheelEvent>
@@ -34,8 +33,6 @@ private:
     int rowIndex;
     QString filepath;
     ImageViewer* imageViewer;
-
-    QString briefFileInfo();
 };
 
 class ZoomableGraphicsView : public ElaGraphicsView {

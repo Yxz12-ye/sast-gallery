@@ -1,4 +1,5 @@
 #include "ImageViewer.h"
+#include <utils/Tools.h>
 
 ImageViewer::ImageViewer(QWidget* parent)
     : WindowOverlayWidget(parent)
@@ -87,17 +88,7 @@ void ImageViewer::readFullInfo(const QString& path) {
     fileInfo += "File Resolution: " + QString::number(QImage(path).width()) + "x"
                 + QString::number(QImage(path).height()) + "\n";
     fileInfo += "File Path: " + info.absoluteFilePath() + "\n";
-    auto size = static_cast<double>(info.size());
-    QString sizeUnit[] = {"B", "KB", "MB", "GB"};
-    int unitIndex = 0;
-    for (; unitIndex < 3; unitIndex++) {
-        if (size < 1024) {
-            break;
-        }
-        size /= 1024;
-        size = static_cast<int>(size * 10) / 10.0;
-    }
-    fileInfo += "File Size: " + QString::number(size) + sizeUnit[unitIndex] + "\n";
+    fileInfo += "File Size: " + Tools::fileSizeString(path) + "\n";
     fileInfo += "File Created: " + info.birthTime().toString() + "\n";
     fileInfo += "File Modified: " + info.lastModified().toString() + "\n";
     fileInfo += "File Accessed: " + info.lastRead().toString() + "\n";
