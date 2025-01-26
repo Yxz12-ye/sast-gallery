@@ -113,8 +113,7 @@ void ViewingWindow::initContent() {
     operationLayout->addWidget(zoom2originalButton);
 
     // Add menu bar and buttons to layout
-
-    viewLayout->addWidget(menuBar);
+    viewLayout->insertWidget(0, menuBar);
     viewLayout->addStretch();
     viewLayout->addLayout(graphicsLayout);
     viewLayout->addStretch();

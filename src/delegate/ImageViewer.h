@@ -36,19 +36,7 @@ protected:
         p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
     }
 
-    void mousePressEvent(QMouseEvent* mouseEvent) override {
-        if (mouseEvent->button() == Qt::LeftButton) {
-            dragPosition = mouseEvent->globalPosition().toPoint() - frameGeometry().topLeft();
-            mouseEvent->accept();
-        }
-    }
-
-    void mouseMoveEvent(QMouseEvent* mouseEvent) override {
-        if (mouseEvent->buttons() & Qt::LeftButton) {
-            move(mouseEvent->globalPosition().toPoint() - dragPosition);
-            mouseEvent->accept();
-        }
-    }
+   
 
     /*
   
