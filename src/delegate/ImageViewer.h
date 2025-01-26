@@ -1,6 +1,8 @@
 #pragma once
 
 #include "utils/WindowOverlayWidget.h"
+#include <QApplication>
+#include <QClipboard>
 #include <QFileDialog>
 #include <QImage>
 #include <QLabel>
@@ -19,6 +21,7 @@ public:
     bool loadImagefrompath(const QString& path);
     bool loadImage(const QImage& image);
     static inline const QString& getImagePath();
+    bool copyImageToClipboard();
     void openImageFileDialog();
     ~ImageViewer() = default;
 
@@ -35,8 +38,6 @@ protected:
         p.drawText(rect(), "IMAGE HERE", Qt::AlignBottom | Qt::AlignRight);
         p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
     }
-
-   
 
     /*
   

@@ -19,7 +19,7 @@ bool ImageViewer::loadImagefrompath(const QString& path) {
         if (loaded.isNull()) {
             return false;
         }
-        image = loaded;
+        this->image = loaded;
         if (imageLabel) {
             imageLabel->setPixmap(QPixmap::fromImage(image));
             imageLabel->setScaledContents(true);
@@ -54,6 +54,17 @@ const QString& ImageViewer::getImagePath() {
     return imagePath;
 }
 
+bool ImageViewer::copyImageToClipboard() {
+    if (this->image.isNull()) {
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setText("Image failed to copy to clipboard,plz load image first");
+        return false;
+    } else {
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setImage(this->image);
+        return true;
+    }
+}
 void ImageViewer::openImageFileDialog() {
     QString imagePath = getImagePath();
     if (!imagePath.isEmpty()) {
