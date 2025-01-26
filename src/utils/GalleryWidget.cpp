@@ -72,16 +72,13 @@ void GalleryWidget::onModelRowsMoved(const QModelIndex& sourceParent,
     for (int i = sourceStart; i <= sourceEnd; i++) {
         movedList += mediaLayout->takeAt(sourceStart)->widget();
     }
-    int i = destinationRow;
-    while (movedList.size() > 0) {
-        mediaLayout->insertWidget(movedList.first(), i);
-        movedList.pop_front();
-        i++;
-    }
+    mediaLayout->insertWidgets(movedList, destinationRow);
 }
 
 void GalleryWidget::onModelRowsInserted(const QModelIndex& parent, int first, int last) {
     qDebug() << "onModelRowsInserted" << first << last;
+
+    QList<QWidget*> insertList;
     for (int i = first; i <= last; i++) {
         auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
                         .value<QString>();
@@ -89,8 +86,9 @@ void GalleryWidget::onModelRowsInserted(const QModelIndex& parent, int first, in
                                     ->data(
                                         mediaListModel->index(i, MediaListModel::LastModifiedTime))
                                     .value<QDateTime>();
-        mediaLayout->insertWidget(new MediaPreviewer(path, lastModifiedTime), i);
+        insertList += new MediaPreviewer(path, lastModifiedTime);
     }
+    mediaLayout->insertWidgets(insertList, first);
 }
 
 void GalleryWidget::onModelRowsRemoved(const QModelIndex& parent, int first, int last) {
@@ -104,33 +102,22 @@ void GalleryWidget::onModelRowsRemoved(const QModelIndex& parent, int first, int
 }
 
 void GalleryWidget::initModelSignals() {
-    connect(mediaListModel,
-            &QAbstractItemModel::dataChanged,
-            this,
-            &GalleryWidget::onModelDataChanged);
-    connect(mediaListModel,
-            &QAbstractItemModel::modelReset,
-            this,
-            &GalleryWidget::onModelModelReset);
-    connect(mediaListModel,
-            &QAbstractItemModel::layoutChanged,
-            this,
-            &GalleryWidget::onModelLayoutChanged);
+    // clang-format off
+    connect(mediaListModel, &QAbstractItemModel::dataChanged, this, &GalleryWidget::onModelDataChanged);
+    connect(mediaListModel, &QAbstractItemModel::modelReset, this, &GalleryWidget::onModelModelReset);
+    connect(mediaListModel, &QAbstractItemModel::layoutChanged, this, &GalleryWidget::onModelLayoutChanged);
     connect(mediaListModel, &QAbstractItemModel::rowsMoved, this, &GalleryWidget::onModelRowsMoved);
-    connect(mediaListModel,
-            &QAbstractItemModel::rowsInserted,
-            this,
-            &GalleryWidget::onModelRowsInserted);
-    connect(mediaListModel,
-            &QAbstractItemModel::rowsRemoved,
-            this,
-            &GalleryWidget::onModelRowsRemoved);
+    connect(mediaListModel, &QAbstractItemModel::rowsInserted, this, &GalleryWidget::onModelRowsInserted);
+    connect(mediaListModel, &QAbstractItemModel::rowsRemoved, this, &GalleryWidget::onModelRowsRemoved);
+    // clang-format on
 }
 
 void GalleryWidget::resetPreviewers() {
     auto row = mediaListModel->rowCount();
     delete mediaLayout;
     mediaLayout = new MediaFlexLayout{this};
+
+    QList<QWidget*> widgets;
     for (int i = 0; i < row; i++) {
         auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
                         .value<QString>();
@@ -138,6 +125,7 @@ void GalleryWidget::resetPreviewers() {
                                     ->data(
                                         mediaListModel->index(i, MediaListModel::LastModifiedTime))
                                     .value<QDateTime>();
-        mediaLayout->addWidget(new MediaPreviewer(path, lastModifiedTime));
+        widgets += new MediaPreviewer(path, lastModifiedTime);
     }
+    mediaLayout->addWidgets(widgets);
 }

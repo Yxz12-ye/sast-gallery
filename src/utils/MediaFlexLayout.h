@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QLayout>
+#include <QTimer>
 
 // ref: https://doc.qt.io/qt-6/qtwidgets-layouts-flowlayout-example.html
 
@@ -18,7 +19,6 @@ class MediaFlexLayout : public QLayout {
 
 public:
     explicit MediaFlexLayout(QWidget* parent = nullptr);
-    explicit MediaFlexLayout(int preferredLineHeight, QWidget* parent = nullptr);
     ~MediaFlexLayout();
 
     void setGeometry(const QRect& rect) override;
@@ -31,12 +31,21 @@ public:
     QLayoutItem* itemAt(int index) const override;
     QLayoutItem* takeAt(int index) override;
 
+    void addWidgets(const QList<QWidget*>& widgets);
     void insertWidget(QWidget* widget, qsizetype index);
+    void insertWidgets(const QList<QWidget*>& widgets, qsizetype index);
 
-    bool hasHeightForWidth() const override;
-    int heightForWidth(int) const override;
+    // bool hasHeightForWidth() const override;
+    // int heightForWidth(int) const override;
+
+public slots:
+
+    void doLayout();
 
 private:
     int layoutItems(const QRect& rect, bool dryRun = false) const;
     LayoutData itemLayoutData(qsizetype i) const;
+
+    mutable bool requireNewCachedSizeHint = true;
+    mutable QSize cachedSizeHint;
 };

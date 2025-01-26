@@ -5,10 +5,6 @@
 MediaFlexLayout::MediaFlexLayout(QWidget* parent)
     : QLayout(parent) {}
 
-MediaFlexLayout::MediaFlexLayout(int preferredLineHeight, QWidget* parent)
-    : QLayout(parent)
-    , preferredLineHeight(preferredLineHeight) {}
-
 MediaFlexLayout::~MediaFlexLayout() {
     QLayoutItem* item;
     while ((item = takeAt(0))) {
@@ -18,7 +14,11 @@ MediaFlexLayout::~MediaFlexLayout() {
 
 void MediaFlexLayout::setGeometry(const QRect& rect) {
     QLayout::setGeometry(rect);
-    layoutItems(rect);
+    auto height = layoutItems(rect);
+
+    // update cache
+    cachedSizeHint = parentWidget()->size();
+    cachedSizeHint.setHeight(height);
 }
 
 QSize MediaFlexLayout::sizeHint() const {
@@ -26,9 +26,12 @@ QSize MediaFlexLayout::sizeHint() const {
 }
 
 QSize MediaFlexLayout::minimumSize() const {
-    QSize size = parentWidget()->size();
-    size.setHeight(layoutItems({0, 0, size.width(), 0}, true));
-    return size;
+    if (requireNewCachedSizeHint) {
+        requireNewCachedSizeHint = false;
+        cachedSizeHint = parentWidget()->size();
+        cachedSizeHint.setHeight(layoutItems({0, 0, cachedSizeHint.width(), 0}, true));
+    }
+    return cachedSizeHint;
 }
 
 Qt::Orientations MediaFlexLayout::expandingDirections() const {
@@ -37,7 +40,7 @@ Qt::Orientations MediaFlexLayout::expandingDirections() const {
 
 void MediaFlexLayout::addItem(QLayoutItem* item) {
     itemList.append(item);
-    layoutItems(geometry());
+    doLayout();
 }
 
 int MediaFlexLayout::count() const {
@@ -57,18 +60,39 @@ QLayoutItem* MediaFlexLayout::takeAt(int index) {
     return nullptr;
 }
 
+void MediaFlexLayout::addWidgets(const QList<QWidget*>& widgets) {
+    for (auto* widget : widgets) {
+        addChildWidget(widget);
+        itemList.emplace_back(new QWidgetItemV2(widget));
+    }
+    doLayout();
+}
+
 void MediaFlexLayout::insertWidget(QWidget* widget, qsizetype index) {
     addChildWidget(widget);
     itemList.insert(index, new QWidgetItemV2(widget));
+    doLayout();
+}
+
+void MediaFlexLayout::insertWidgets(const QList<QWidget*>& widgets, qsizetype index) {
+    for (auto* widget : widgets) {
+        addChildWidget(widget);
+        itemList.insert(index, new QWidgetItemV2(widget));
+        index++;
+    }
+    doLayout();
+}
+
+// bool MediaFlexLayout::hasHeightForWidth() const {
+//     return true;
+// }
+
+// int MediaFlexLayout::heightForWidth(int width) const {
+//     return layoutItems({0, 0, width, 0}, true);
+// }
+
+void MediaFlexLayout::doLayout() {
     layoutItems(geometry());
-}
-
-bool MediaFlexLayout::hasHeightForWidth() const {
-    return true;
-}
-
-int MediaFlexLayout::heightForWidth(int width) const {
-    return layoutItems({0, 0, width, 0}, true);
 }
 
 int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
@@ -129,7 +153,7 @@ int MediaFlexLayout::layoutItems(const QRect& rect, bool dryRun) const {
     }
 
     // return content height for other function
-    return y - spacing() + bottom;
+    return y - spacing() + bottom - rect.top();
 }
 
 MediaFlexLayout::LayoutData MediaFlexLayout::itemLayoutData(qsizetype i) const {
