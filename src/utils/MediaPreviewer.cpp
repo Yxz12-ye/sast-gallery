@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
+#include <QPropertyAnimation>
 #include <QtConcurrentRun>
 #include <model/MediaListModel.h>
 
@@ -12,6 +13,12 @@ MediaPreviewer::MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget*
     lastModified = model->data(model->index(rowIndex, MediaListModel::LastModifiedTime))
                        .value<QDateTime>();
     isFav = model->data(model->index(rowIndex, MediaListModel::IsFavorite)).value<bool>();
+
+    colorizeEffect = new QGraphicsColorizeEffect(this);
+    colorizeEffect->setColor(Qt::white);
+    colorizeEffect->setStrength(0.0);
+    setGraphicsEffect(colorizeEffect);
+
     connect(&imageLoadWatcher,
             &QFutureWatcher<QPixmap*>::finished,
             this,
@@ -89,8 +96,30 @@ void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
     emit doubleClicked();
 }
 
+void MediaPreviewer::enterEvent(QEnterEvent* event) {
+    QLabel::enterEvent(event);
+    propertyAnimation(colorizeEffect, "strength", colorizeEffect->strength(), 0.15);
+}
+
+void MediaPreviewer::leaveEvent(QEvent* event) {
+    QLabel::leaveEvent(event);
+    propertyAnimation(colorizeEffect, "strength", colorizeEffect->strength(), 0.0);
+}
+
 QPixmap MediaPreviewer::loadImage() {
     QImageReader reader(filepath);
     reader.setScaledSize(QSize{0, 180});
     return roundedPixmap(QPixmap::fromImage(reader.read()), 4);
+}
+
+void MediaPreviewer::propertyAnimation(QObject* target,
+                                       const QByteArray& propertyName,
+                                       const QVariant& startValue,
+                                       const QVariant& endValue,
+                                       int duration) {
+    auto* animation = new QPropertyAnimation(target, propertyName);
+    animation->setDuration(duration);
+    animation->setStartValue(startValue);
+    animation->setEndValue(endValue);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }

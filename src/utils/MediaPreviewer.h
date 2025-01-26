@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QEvent>
 #include <QFutureWatcher>
+#include <QGraphicsColorizeEffect>
 #include <QLabel>
 
 // display media in thumbnail, supposed to be work with ImageFlexLayout
@@ -33,6 +34,8 @@ public slots:
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
+    void leaveEvent(QEvent* event) override;
 
 private:
     QString filepath;
@@ -44,7 +47,15 @@ private:
     bool requireReloadImage = true;
     QFutureWatcher<QPixmap> imageLoadWatcher;
 
+    QGraphicsColorizeEffect* colorizeEffect;
+
     void initMedia();
     static QPixmap roundedPixmap(const QPixmap& original, double radius);
     QPixmap loadImage();
+
+    void propertyAnimation(QObject* target,
+                           const QByteArray& propertyName,
+                           const QVariant& startValue,
+                           const QVariant& endValue,
+                           int duration = 200);
 };
