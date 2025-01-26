@@ -155,15 +155,21 @@ void ViewingWindow::initContent() {
     connect(saveasFileAction, &QAction::triggered, this, [=]() {
         imageViewer->saveImageFileDialog();
     });
-    connect(openInFileExplorerAction, &QAction::triggered, this, [=]() {
-        qDebug() << "Open in file explorer clicked";
-    });
+
+    //TODO(must):implement the openInFileExplorer functionality
+    //connect(openInFileExplorerAction,......)
+
     connect(rotateAction, &QAction::triggered, this, [=]() { qDebug() << "Rotate action clicked"; });
     connect(deleteAction, &QAction::triggered, this, [=]() { qDebug() << "Delete action clicked"; });
     connect(printAction, &QAction::triggered, this, [=]() { qDebug() << "Print action clicked"; });
-    connect(editAction, &QAction::triggered, this, [=]() { qDebug() << "Edit action clicked"; });
+    connect(editAction, &QAction::triggered, this, [=]() {
+        //TODO(optional):implement the edit functionality
+    });
 
-    connect(likeButton, &ElaIconButton::clicked, this, [=]() { qDebug() << "Like button clicked"; });
+    connect(likeButton, &ElaIconButton::clicked, this, [=]() {
+        //TODO(must):implement the like functionality
+        // add the image to Favorite Page
+    });
     connect(fileInfoButton, &ElaIconButton::clicked, this, [=]() {
         qDebug() << "File info button clicked";
     });
