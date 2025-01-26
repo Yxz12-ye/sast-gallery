@@ -105,9 +105,9 @@ void ViewingWindow::initContent() {
     operationLayout->addWidget(dividerText1);
     operationLayout->addWidget(fileInfoBriefText);
     operationLayout->addStretch();
-    operationLayout->addWidget(zoomInButton);
-    operationLayout->addWidget(zoomSlider);
     operationLayout->addWidget(zoomOutButton);
+    operationLayout->addWidget(zoomSlider);
+    operationLayout->addWidget(zoomInButton);
     operationLayout->addWidget(dividerText2);
     operationLayout->addWidget(fullscreenButton);
     operationLayout->addWidget(zoom2originalButton);
