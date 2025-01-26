@@ -30,7 +30,7 @@ jobs:
             msvc_arch: x64
     env: 
       targetName: sast-gallery.exe
-      fileName: sast_gallery
+      fileName: sast-gallery
       QT_MODULES: "qt5compat qtmultimedia"
     steps:
       - name: Check out repository
@@ -92,6 +92,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./action-cli/installer.exe
-          asset_name: ${{ env.fileName }}_win32.exe
+          asset_name: ${{ env.fileName }}-installer-win-x64.exe
           tag: ${{ github.ref }}
           overwrite: true 

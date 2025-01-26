@@ -27,7 +27,7 @@ jobs:
         qt_ver: [6.8.0]
         qt_arch: [clang_64]
     env:
-      targetName: sast_gallery
+      targetName: sast-gallery
       QT_MODULES: "qt5compat qtmultimedia"
     steps:
       - name: check out repository
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: startsWith(github.event.ref, 'refs/tags/')
         with:
-          name: ${{ env.targetName }}_${{ matrix.os }}
+          name: ${{ env.targetName }}-${{ matrix.os }}
           path: build/Release/sast-gallery.app
 
       - name: upload release
@@ -72,7 +72,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/Release/sast-gallery.dmg
-          asset_name: ${{ env.targetName }}_mac.dmg
+          asset_name: ${{ env.targetName }}-mac.dmg
           tag: ${{ github.ref }}
           overwrite: true
   

@@ -27,7 +27,7 @@ jobs:
         qt_ver: [6.8.0]
         qt_arch: [linux_gcc_64]
     env:
-      targetName: sast_gallery
+      targetName: sast-gallery
       QT_MODULES: "qt5compat qtmultimedia"
     steps:
       - name: check out repository
@@ -86,20 +86,20 @@ jobs:
           echo "Name=SAST Gallery" >> sast-gallery-appimage.desktop
           echo "Type=Application" >> sast-gallery-appimage.desktop
           echo "Exec=sast-gallery" >> sast-gallery-appimage.desktop
-          linuxdeploy-x86_64.AppImage --output=appimage --desktop-file=sast-gallery-appimage.desktop --icon-file=res/icon/app_icon.svg --executable=build/Release/sast-gallery --appdir AppDir
-          mv SAST_Gallery-x86_64.AppImage ${{ env.targetName }}_appimage_x86_64.AppImage
+          linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=sast-gallery-appimage.desktop --icon-file=res/icon/app_icon.svg --executable=build/Release/sast-gallery --appdir AppDir
+          mv SAST_Gallery-x86_64.AppImage ${{ env.targetName }}-appimage-x64.AppImage
       
       - name: Calculate SHA256
         run: |
           touch sast-gallery.sha256
-          sha256sum ${{ env.targetName }}_appimage_x86_64.AppImage > sast-gallery.sha256
+          sha256sum ${{ env.targetName }}-appimage-x64.AppImage > sast-gallery.sha256
           echo "SHA256 value is:"
           cat sast-gallery.sha256
   
       - uses: actions/upload-artifact@v4
         if: startsWith(github.event.ref, 'refs/tags/')
         with:
-          name: ${{ env.targetName }}_sha256
+          name: ${{ env.targetName }}-sha256
           path: sast-gallery.sha256
   
       - name: upload SHA256
@@ -114,15 +114,15 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: startsWith(github.event.ref, 'refs/tags/')
         with:
-          name: ${{ env.targetName }}_appimage_x86_64.AppImage
-          path: ${{ env.targetName }}_appimage_x86_64.AppImage
+          name: ${{ env.targetName }}-appimage-x64.AppImage
+          path: ${{ env.targetName }}-appimage-x64.AppImage
       
       - name: upload release
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.targetName }}_appimage_x86_64.AppImage
-          asset_name: ${{ env.targetName }}_appimage_x86_64.AppImage
+          file: ${{ env.targetName }}-appimage-x64.AppImage
+          asset_name: ${{ env.targetName }}-appimage-x64.AppImage
           tag: ${{ github.ref }}
           overwrite: true
