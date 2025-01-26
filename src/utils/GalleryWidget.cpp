@@ -80,13 +80,13 @@ void GalleryWidget::onModelRowsInserted(const QModelIndex& parent, int first, in
 
     QList<QWidget*> insertList;
     for (int i = first; i <= last; i++) {
-        auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
-                        .value<QString>();
-        auto lastModifiedTime = mediaListModel
-                                    ->data(
-                                        mediaListModel->index(i, MediaListModel::LastModifiedTime))
-                                    .value<QDateTime>();
-        insertList += new MediaPreviewer(path, lastModifiedTime);
+        // auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
+        //                 .value<QString>();
+        // auto lastModifiedTime = mediaListModel
+        //                             ->data(
+        //                                 mediaListModel->index(i, MediaListModel::LastModifiedTime))
+        //                             .value<QDateTime>();
+        insertList += new MediaPreviewer(mediaListModel, i);
     }
     mediaLayout->insertWidgets(insertList, first);
 }
@@ -119,13 +119,13 @@ void GalleryWidget::resetPreviewers() {
 
     QList<QWidget*> widgets;
     for (int i = 0; i < row; i++) {
-        auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
-                        .value<QString>();
-        auto lastModifiedTime = mediaListModel
-                                    ->data(
-                                        mediaListModel->index(i, MediaListModel::LastModifiedTime))
-                                    .value<QDateTime>();
-        widgets += new MediaPreviewer(path, lastModifiedTime);
+        // auto path = mediaListModel->data(mediaListModel->index(i, MediaListModel::Path))
+        //                 .value<QString>();
+        // auto lastModifiedTime = mediaListModel
+        //                             ->data(
+        //                                 mediaListModel->index(i, MediaListModel::LastModifiedTime))
+        //                             .value<QDateTime>();
+        widgets += new MediaPreviewer(mediaListModel, i);
     }
     mediaLayout->addWidgets(widgets);
 }

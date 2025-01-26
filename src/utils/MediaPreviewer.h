@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QAbstractItemModel>
 #include <QDateTime>
 #include <QEvent>
 #include <QFutureWatcher>
@@ -9,10 +10,7 @@
 class MediaPreviewer : public QLabel {
     Q_OBJECT
 public:
-    explicit MediaPreviewer(QString filepath,
-                            QDateTime time,
-                            bool isFavorite = false,
-                            QWidget* parent = nullptr);
+    explicit MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget* parent = nullptr);
     ~MediaPreviewer();
 
     // load image when show
@@ -26,6 +24,9 @@ public:
     QString path();
     QDateTime lastModifiedTime();
     bool isFavorite();
+
+signals:
+    void doubleClicked();
 
 public slots:
     void loadImageComplete();

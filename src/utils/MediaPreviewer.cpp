@@ -4,12 +4,14 @@
 #include <QPainterPath>
 #include <QPixmap>
 #include <QtConcurrentRun>
+#include <model/MediaListModel.h>
 
-MediaPreviewer::MediaPreviewer(QString filepath, QDateTime time, bool isFavorite, QWidget* parent)
-    : QLabel(parent)
-    , filepath(std::move(filepath))
-    , lastModified(std::move(time))
-    , isFav(isFavorite) {
+MediaPreviewer::MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget* parent)
+    : QLabel(parent) {
+    filepath = model->data(model->index(rowIndex, MediaListModel::Path)).value<QString>();
+    lastModified = model->data(model->index(rowIndex, MediaListModel::LastModifiedTime))
+                       .value<QDateTime>();
+    isFav = model->data(model->index(rowIndex, MediaListModel::IsFavorite)).value<bool>();
     connect(&imageLoadWatcher,
             &QFutureWatcher<QPixmap*>::finished,
             this,
@@ -17,6 +19,7 @@ MediaPreviewer::MediaPreviewer(QString filepath, QDateTime time, bool isFavorite
     setScaledContents(true);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     initMedia();
+    // TODO: open the image in a ViewingWindow when double clicked
 }
 
 MediaPreviewer::~MediaPreviewer() {}
@@ -82,7 +85,8 @@ void MediaPreviewer::loadImageComplete() {
 }
 
 void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
-    // TODO: open the image in a ViewingWindow
+    QLabel::mouseDoubleClickEvent(event);
+    emit doubleClicked();
 }
 
 QPixmap MediaPreviewer::loadImage() {

@@ -2,7 +2,6 @@
 #include "delegate/DiskScanner.h"
 #include "model/MediaListModel.h"
 #include "utils/Settings.hpp"
-#include "view/ViewingWindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : ElaWindow(parent) {
@@ -39,11 +38,6 @@ void MainWindow::initContent() {
     settingPage = new SettingPage(this);
     QString settingPageKey;
     addFooterNode("Setting", settingPage, settingPageKey, 0, ElaIconType::GearComplex);
-
-    // ViewingWindow for media
-    auto* viewingWindow = new ViewingWindow(":/res/icon/app_icon.svg");
-    connect(this, &MainWindow::destroyed, viewingWindow, &ViewingWindow::close);
-    viewingWindow->show();
 }
 
 void MainWindow::initModel() {

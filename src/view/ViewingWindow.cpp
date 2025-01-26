@@ -6,10 +6,14 @@
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>
+#include <model/MediaListModel.h>
 
-ViewingWindow::ViewingWindow(QString filepath, QWidget* parent)
-    : filepath(std::move(filepath))
-    , ElaCustomWidget(parent) {
+ViewingWindow::ViewingWindow(QAbstractItemModel* model, int index, QWidget* parent)
+    : ElaCustomWidget(parent)
+    , mediaListModel(model)
+    , rowIndex(index) {
+    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
+                   .value<QString>();
     initWindow();
     initContent();
 }
@@ -77,7 +81,7 @@ void ViewingWindow::initContent() {
     dividerText1->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     dividerText1->setTextPixelSize(14);
 
-    ElaText* fileInfoBriefText = new ElaText(getBriefFileInfo(filepath), this);
+    ElaText* fileInfoBriefText = new ElaText(briefFileInfo(), this);
     fileInfoBriefText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     fileInfoBriefText->setTextPixelSize(14);
 
@@ -193,7 +197,7 @@ void ViewingWindow::initContent() {
     });
 }
 
-QString ViewingWindow::getBriefFileInfo(QString filepath) {
+QString ViewingWindow::briefFileInfo() {
     QFileInfo fileInfo(filepath);
     auto size = static_cast<double>(fileInfo.size());
     QString unit[] = {"B", "KB", "MB", "GB"};

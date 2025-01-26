@@ -13,6 +13,7 @@
 #include <ElaSlider.h>
 #include <ElaText.h>
 #include <ElaWidget.h>
+#include <QAbstractItemModel>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -22,18 +23,19 @@ class ViewingWindow : public ElaCustomWidget {
     Q_OBJECT
 
 public:
-    explicit ViewingWindow(QString filepath, QWidget* parent = nullptr);
+    explicit ViewingWindow(QAbstractItemModel* model, int index, QWidget* parent = nullptr);
     ~ViewingWindow();
 
     void initWindow();
     void initContent();
 
 private:
+    QAbstractItemModel* mediaListModel;
+    int rowIndex;
     QString filepath;
-
     ImageViewer* imageViewer;
 
-    QString getBriefFileInfo(QString filepath);
+    QString briefFileInfo();
 };
 
 class ZoomableGraphicsView : public ElaGraphicsView {
