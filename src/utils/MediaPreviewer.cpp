@@ -17,7 +17,6 @@ MediaPreviewer::MediaPreviewer(QString filepath, QDateTime time, bool isFavorite
     setScaledContents(true);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     initMedia();
-    qDebug() << "load image" << this->filepath;
 }
 
 MediaPreviewer::~MediaPreviewer() {}
@@ -65,21 +64,21 @@ void MediaPreviewer::initMedia() {
     requireReloadImage = true;
 }
 
-QPixmap MediaPreviewer::roundedPixmap(const QPixmap& original, int radius) {
+QPixmap MediaPreviewer::roundedPixmap(const QPixmap& original, double radius) {
     QPixmap target = QPixmap(original.size());
     target.fill(Qt::transparent);
     QPainter painter(&target);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     QPainterPath path = QPainterPath();
-    path.addRoundedRect(target.rect(), 4, 4);
+    path.addRoundedRect(target.rect(), radius, radius);
     painter.setClipPath(path);
     painter.drawPixmap(0, 0, original);
     return target;
 }
 
 void MediaPreviewer::loadImageComplete() {
-    setPixmap(roundedPixmap(QPixmap(imageLoadWatcher.result()), 4));
+    setPixmap(imageLoadWatcher.result());
 }
 
 void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -89,5 +88,5 @@ void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
 QPixmap MediaPreviewer::loadImage() {
     QImageReader reader(filepath);
     reader.setScaledSize(QSize{0, 180});
-    return QPixmap::fromImage(reader.read());
+    return roundedPixmap(QPixmap::fromImage(reader.read()), 4);
 }
