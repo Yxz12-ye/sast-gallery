@@ -181,23 +181,28 @@ void ViewingWindow::initContent() {
         imageViewer->readFullInfo(imageViewer->getImagePath());
     });
     connect(zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFacor += 0.2;
-        // if (scaleFacor > 3) scaleFacor = 3;
-        // zoomSlider->setValue(scaleFacor * 100);
+        // scaleFactor += 0.2;
+        // if (scaleFactor > 3) scaleFactor = 3;
+        // zoomSlider->setToolTip(QString::number(scaleFacor * 100));
+        // zoomSlider->setValue(scaleFactor * 100);
     });
     connect(zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFacor -= 0.2;
-        // if (scaleFacor < 0.2) scaleFacor = 0.1;
-        // zoomSlider->setValue(scaleFacor * 100);
+        // scaleFactor -= 0.2;
+        // if (scaleFactor < 0.2) scaleFactor = 0.1;
+        // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
+        // zoomSlider->setValue(scaleFactor * 100);
     });
     connect(fullscreenButton, &ElaIconButton::clicked, this, [=]() { this->showFullScreen(); });
     connect(zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
-        qDebug() << "Zoom to original button clicked";
+        // scaleFactor = 1;
+        // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
+        // zoomSlider->setValue(scaleFactor * 100);
     });
     connect(zoomSlider, &ElaSlider::valueChanged, this, [=](int value) {
         // range from 1% to 300%
         if (value >= 1 && value <= 300) {
             zoomSlider->setToolTip(QString::number(value));
+            zoomSlider->setValue(value);
         }
     });
     connect(scene, &ElaGraphicsScene::mouseLeftClickedItem, this, [=](ElaGraphicsItem* item) {
