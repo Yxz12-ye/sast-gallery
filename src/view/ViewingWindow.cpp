@@ -171,7 +171,7 @@ void ViewingWindow::initContent() {
         // add the image to Favorite Page
     });
     connect(fileInfoButton, &ElaIconButton::clicked, this, [=]() {
-        qDebug() << "File info button clicked";
+        imageViewer->readFullInfo(imageViewer->getImagePath());
     });
     connect(zoomInButton, &ElaIconButton::clicked, this, [=]() {
         qDebug() << "Zoom in button clicked";

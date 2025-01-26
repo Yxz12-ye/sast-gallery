@@ -1,11 +1,14 @@
 #pragma once
 
 #include "utils/WindowOverlayWidget.h"
+#include <ElaMessageBar.h>
 #include <QApplication>
 #include <QClipboard>
 #include <QFileDialog>
 #include <QImage>
+#include <QImageReader>
 #include <QLabel>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QVBoxLayout>
@@ -20,10 +23,11 @@ public:
     ImageViewer(QWidget* parent = {});
     bool loadImagefrompath(const QString& path);
     bool loadImage(const QImage& image);
-    static inline const QString& getImagePath();
+    const QString& getImagePath();
     bool copyImageToClipboard();
     void openImageFileDialog();
     void saveImageFileDialog();
+    void readFullInfo(const QString& path);
     ~ImageViewer() = default;
 
 protected:
@@ -42,8 +46,6 @@ protected:
 
     /*
   
-   virtual void displaymedia()=0;
-    
     virtual void previousmedia()=0;
     
     virtual void nextmedia()=0;
@@ -60,6 +62,7 @@ protected:
 private:
     QImage image; //process image in RAM , then cast to QPixmap to QLabel for display
     QLabel* imageLabel;
+    QString imagePath;
     QVBoxLayout* layout;
     QPoint dragPosition;
     double scaleFactor;
