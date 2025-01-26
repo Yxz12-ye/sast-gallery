@@ -91,7 +91,7 @@ void ViewingWindow::initContent() {
     ElaSlider* zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
     // range from 1% to 300% scaleFactor: 0.01 to 3.00
     // scaleFactor = 1 + zoomSlider->value() / 100
-    zoomSlider->setRange(1, 300);//percentage of zoom
+    zoomSlider->setRange(1, 300); //percentage of zoom
     zoomSlider->setMaximumWidth(200);
 
     ElaIconButton* zoomOutButton = new ElaIconButton(ElaIconType::MagnifyingGlassMinus);
@@ -182,13 +182,15 @@ void ViewingWindow::initContent() {
     });
     connect(zoomInButton, &ElaIconButton::clicked, this, [=]() {
         // scaleFacor += 0.2;
+        // if (scaleFacor > 3) scaleFacor = 3;
+        // zoomSlider->setValue(scaleFacor * 100);
     });
     connect(zoomOutButton, &ElaIconButton::clicked, this, [=]() {
         // scaleFacor -= 0.2;
+        // if (scaleFacor < 0.2) scaleFacor = 0.1;
+        // zoomSlider->setValue(scaleFacor * 100);
     });
-    connect(fullscreenButton, &ElaIconButton::clicked, this, [=]() {
-        this->showFullScreen();
-    });
+    connect(fullscreenButton, &ElaIconButton::clicked, this, [=]() { this->showFullScreen(); });
     connect(zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
         qDebug() << "Zoom to original button clicked";
     });
@@ -197,7 +199,6 @@ void ViewingWindow::initContent() {
         if (value >= 1 && value <= 300) {
             zoomSlider->setToolTip(QString::number(value));
         }
-        
     });
     connect(scene, &ElaGraphicsScene::mouseLeftClickedItem, this, [=](ElaGraphicsItem* item) {
         qDebug() << "Scene now displays image";
