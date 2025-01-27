@@ -26,6 +26,7 @@ public:
     const QString& getImagePath();
     bool copyImageToClipboard();
     void openImageFileDialog();
+    QImage getImage() const { return this->image; }
     void saveImageFileDialog();
     void readFullInfo(const QString& path);
     ~ImageViewer() = default;
