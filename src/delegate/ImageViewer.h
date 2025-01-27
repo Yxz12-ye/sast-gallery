@@ -21,7 +21,7 @@ class ImageViewer : public WindowOverlayWidget {
     Q_OBJECT
 public:
     ImageViewer(QWidget* parent = {});
-    bool loadImagefrompath(const QString& path);
+    bool loadImagefromDisk(const QString& path);
     bool loadImage(const QImage& image);
     const QString& getImagePath();
     bool copyImageToClipboard();

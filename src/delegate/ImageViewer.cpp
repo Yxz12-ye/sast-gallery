@@ -11,7 +11,7 @@ ImageViewer::ImageViewer(QWidget* parent)
     imageLabel = new QLabel(this);
 }
 
-bool ImageViewer::loadImagefrompath(const QString& path) {
+bool ImageViewer::loadImagefromDisk(const QString& path) {
     try {
         if (path.isEmpty()) {
             return false;
@@ -44,11 +44,7 @@ bool ImageViewer::loadImage(const QImage& image) {
     }
 }
 const QString& ImageViewer::getImagePath() {
-    imagePath = QFileDialog::getOpenFileName(nullptr,
-                                             "Choose Image File",
-                                             "",
-                                             "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
-    return imagePath;
+    return this->imagePath;
 }
 
 bool ImageViewer::copyImageToClipboard() {
@@ -63,9 +59,12 @@ bool ImageViewer::copyImageToClipboard() {
     }
 }
 void ImageViewer::openImageFileDialog() {
-    imagePath = getImagePath();
+    imagePath = QFileDialog::getOpenFileName(nullptr,
+                                             "Choose Image File",
+                                             "",
+                                             "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
     if (!imagePath.isEmpty()) {
-        loadImagefrompath(imagePath);
+        loadImagefromDisk(imagePath);
     }
 }
 
