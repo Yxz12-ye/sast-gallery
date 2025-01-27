@@ -9,7 +9,6 @@ ImageViewer::ImageViewer(QWidget* parent)
     // setWindowFlags(Qt::FramelessWindowHint);
     setWindowFlags(Qt::Widget);
     imageLabel = new QLabel(this);
-    layout->addWidget(imageLabel);
 }
 
 bool ImageViewer::loadImagefrompath(const QString& path) {
@@ -22,10 +21,7 @@ bool ImageViewer::loadImagefrompath(const QString& path) {
             return false;
         }
         this->image = loaded;
-        if (imageLabel) {
-            imageLabel->setPixmap(QPixmap::fromImage(image));
-            imageLabel->setScaledContents(true);
-        }
+
         return true;
     } catch (...) {
         return false;

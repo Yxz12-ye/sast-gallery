@@ -6,6 +6,7 @@
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>
+#include <QGraphicsProxyWidget>
 #include <model/MediaListModel.h>
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -31,8 +32,9 @@ void ViewingWindow::initWindow() {
 void ViewingWindow::initContent() {
     // TODO: implement this to display images mimicking Windows Photo Viewer's UI
     imageViewer = new ImageViewer(this);
-    // QVBoxLayout* viewLayout = new QVBoxLayout(this);
+
     QWidget* centralWidget = new QWidget(this);
+
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
     // mainLayout->addWidget(imageViewer);
 
@@ -40,15 +42,23 @@ void ViewingWindow::initContent() {
     ElaMenuBar* menuBar = new ElaMenuBar(this);
 
     QAction* rotateAction = menuBar->addElaIconAction(ElaIconType::RotateRight, "rotate");
+
     QAction* deleteAction = menuBar->addElaIconAction(ElaIconType::TrashCan, "delete");
+
     QAction* printAction = menuBar->addElaIconAction(ElaIconType::Print, "print");
+
     QAction* editAction = menuBar->addElaIconAction(ElaIconType::Pen, "edit");
+
     ElaMenu* fileMenu = menuBar->addMenu(ElaIconType::Ellipsis, nullptr);
 
     QAction* openFileAction = fileMenu->addAction("Open");
+
     QAction* copyFileAction = fileMenu->addAction("Copy");
+
     QAction* saveasFileAction = fileMenu->addAction("Save As");
+
     QAction* openInFileExplorerAction = fileMenu->addAction("Open image in File Explorer");
+
     fileMenu->addSeparator();
 
     //Set menu bar layout policy
@@ -60,20 +70,6 @@ void ViewingWindow::initContent() {
     // put image relevant parts here and add them to mainLayout between menuBar and operationLayout
 
     // placeholder for image, remove this when actual image is displayed
-    ElaGraphicsScene* scene = new ElaGraphicsScene(this);
-    scene->setSceneRect(0, 0, 500, 500);
-    ElaGraphicsItem* item1 = new ElaGraphicsItem();
-    item1->setItemImage(QImage(filepath));
-    item1->setWidth(400);
-    item1->setHeight(400);
-    scene->addItem(item1);
-    ElaGraphicsView* view = new ElaGraphicsView(scene);
-    view->setScene(scene);
-    view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QVBoxLayout* graphicsLayout = new QVBoxLayout();
-    graphicsLayout->addWidget(view);
-    graphicsLayout->addWidget(imageViewer);
 
     // Create buttons
     QHBoxLayout* operationLayout = new QHBoxLayout(this);
@@ -119,27 +115,37 @@ void ViewingWindow::initContent() {
     zoom2originalButton->setMaximumWidth(25);
 
     operationLayout->addWidget(likeButton);
+
     operationLayout->addWidget(fileInfoButton);
+
     operationLayout->addWidget(dividerText1);
+
     operationLayout->addWidget(fileInfoBriefText);
+
     operationLayout->addStretch();
+
     operationLayout->addWidget(zoomOutButton);
+
     operationLayout->addWidget(zoomSlider);
+
     operationLayout->addWidget(zoomInButton);
+
     operationLayout->addWidget(dividerText2);
+
     operationLayout->addWidget(maximizeButton);
+
     operationLayout->addWidget(zoom2originalButton);
 
     // Add menu bar and buttons to layout
-    mainLayout->addWidget(menuBar);
-    mainLayout->addLayout(graphicsLayout);
+    mainLayout->insertWidget(0, menuBar);
+
+    mainLayout->addWidget(imageViewer, 1);
+
     mainLayout->addLayout(operationLayout);
-    // mainLayout->insertWidget(0, menuBar);
-    // mainLayout->addStretch();
-    // mainLayout->addLayout(graphicsLayout);
-    // mainLayout->addStretch();
-    // mainLayout->addLayout(operationLayout);
-    // mainLayout->setAlignment(Qt::AlignTop);
+
+    mainLayout->addStretch();
+
+    mainLayout->setAlignment(Qt::AlignTop);
     // Set custom widget to the title bar
 
     setCentralWidget(centralWidget);
@@ -160,13 +166,14 @@ void ViewingWindow::initContent() {
     maximizeButton->setStatusTip("Fullscreen");
     zoom2originalButton->setStatusTip("Zoom to original size");
 
-    ZoomableGraphicsView* zoomableGraphicsView = new ZoomableGraphicsView(scene);
-    graphicsLayout->addWidget(view);
-
     // connect to actions
     connect(openFileAction, &QAction::triggered, this, [=]() {
         imageViewer->openImageFileDialog();
 
+        if (imageViewer->imageLabel) {
+            imageViewer->imageLabel->setPixmap(QPixmap::fromImage(imageViewer->image));
+            imageViewer->imageLabel->setScaledContents(true);
+        }
         QScreen* screen = QGuiApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         int screenWidth = screenGeometry.width();
@@ -190,8 +197,11 @@ void ViewingWindow::initContent() {
     //connect(openInFileExplorerAction,......)
 
     connect(rotateAction, &QAction::triggered, this, [=]() { qDebug() << "Rotate action clicked"; });
+
     connect(deleteAction, &QAction::triggered, this, [=]() { qDebug() << "Delete action clicked"; });
+
     connect(printAction, &QAction::triggered, this, [=]() { qDebug() << "Print action clicked"; });
+
     connect(editAction, &QAction::triggered, this, [=]() {
         //TODO(optional):implement the edit functionality
     });
@@ -200,35 +210,38 @@ void ViewingWindow::initContent() {
         //TODO(must):implement the like functionality
         // add the image to Favorite Page
     });
+
     connect(fileInfoButton, &ElaIconButton::clicked, this, [=]() {
         imageViewer->readFullInfo(imageViewer->getImagePath());
     });
+
     connect(zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFactor += 0.2;
+        // scaleFactor *= 1.2;
         // if (scaleFactor > 3) scaleFactor = 3;
         // zoomSlider->setToolTip(QString::number(scaleFacor * 100));
         // zoomSlider->setValue(scaleFactor * 100);
     });
+
     connect(zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFactor -= 0.2;
+        // scaleFactor /= 0.2;
         // if (scaleFactor < 0.2) scaleFactor = 0.1;
         // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         // zoomSlider->setValue(scaleFactor * 100);
     });
+
     connect(maximizeButton, &ElaIconButton::clicked, this, [=]() { this->showMaximized(); });
+
     connect(zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
         // scaleFactor = 1;
         // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         // zoomSlider->setValue(scaleFactor * 100);
     });
+
     connect(zoomSlider, &ElaSlider::valueChanged, this, [=](int value) {
         // range from 1% to 300%
         if (value >= 1 && value <= 300) {
             zoomSlider->setToolTip(QString::number(value));
             zoomSlider->setValue(value);
         }
-    });
-    connect(scene, &ElaGraphicsScene::mouseLeftClickedItem, this, [=](ElaGraphicsItem* item) {
-        qDebug() << "Scene now displays image";
     });
 }
