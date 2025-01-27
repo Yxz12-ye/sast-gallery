@@ -112,8 +112,8 @@ void ViewingWindow::initContent() {
     dividerText2->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     dividerText2->setTextPixelSize(14);
 
-    ElaIconButton* fullscreenButton = new ElaIconButton(ElaIconType::ExpandWide);
-    fullscreenButton->setMaximumWidth(25);
+    ElaIconButton* maximizeButton = new ElaIconButton(ElaIconType::ExpandWide);
+    maximizeButton->setMaximumWidth(25);
 
     ElaIconButton* zoom2originalButton = new ElaIconButton(ElaIconType::Expand);
     zoom2originalButton->setMaximumWidth(25);
@@ -127,7 +127,7 @@ void ViewingWindow::initContent() {
     operationLayout->addWidget(zoomSlider);
     operationLayout->addWidget(zoomInButton);
     operationLayout->addWidget(dividerText2);
-    operationLayout->addWidget(fullscreenButton);
+    operationLayout->addWidget(maximizeButton);
     operationLayout->addWidget(zoom2originalButton);
 
     // Add menu bar and buttons to layout
@@ -157,7 +157,7 @@ void ViewingWindow::initContent() {
     fileInfoButton->setStatusTip("Show file info");
     zoomInButton->setStatusTip("Zoom in");
     zoomOutButton->setStatusTip("Zoom out");
-    fullscreenButton->setStatusTip("Fullscreen");
+    maximizeButton->setStatusTip("Fullscreen");
     zoom2originalButton->setStatusTip("Zoom to original size");
 
     ZoomableGraphicsView* zoomableGraphicsView = new ZoomableGraphicsView(scene);
@@ -215,7 +215,7 @@ void ViewingWindow::initContent() {
         // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         // zoomSlider->setValue(scaleFactor * 100);
     });
-    connect(fullscreenButton, &ElaIconButton::clicked, this, [=]() { this->showFullScreen(); });
+    connect(maximizeButton, &ElaIconButton::clicked, this, [=]() { this->showMaximized(); });
     connect(zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
         // scaleFactor = 1;
         // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
