@@ -181,6 +181,7 @@ void ViewingWindow::initContent() {
 
         int windowWidth = screenWidth / 2;
         int windowHeight = screenHeight / 2;
+        this->resize(windowWidth, windowHeight);
         imageViewer->resize(windowWidth, windowHeight);
 
         // if you wanna adapt to your monitor resolution, use this
