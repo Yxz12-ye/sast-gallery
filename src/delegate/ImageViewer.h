@@ -29,6 +29,7 @@ public:
     QImage getImage() const { return this->image; }
     void saveImageFileDialog();
     void readFullInfo(const QString& path);
+    void adaptiveResize();
     ~ImageViewer() = default;
 
 protected:

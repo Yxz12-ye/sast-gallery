@@ -96,7 +96,31 @@ void ImageViewer::readFullInfo(const QString& path) {
 
     QMessageBox::information(this, "Full Image Information", fileInfo);
 }
+void ImageViewer::adaptiveResize() {
+    // get the resolution of user's monitor
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int screenWidth = screenGeometry.width();
+    int screenHeight = screenGeometry.height();
+    //get the size of the image
 
+    QImage loadedImage = this->image;
+    int imageWidth = loadedImage.width();
+    int imageHeight = loadedImage.height();
+
+    //calculate the size of the Window
+    int windowWidth = imageWidth;
+    int windowHeight = imageHeight;
+    if (imageWidth > screenWidth || imageHeight > screenHeight) {
+        qreal widthRatio = static_cast<qreal>(screenWidth) / windowWidth;
+        qreal heightRatio = static_cast<qreal>(screenHeight) / windowHeight;
+        qreal scaleFactor = qMin(widthRatio, heightRatio);
+        windowWidth = static_cast<int>(windowWidth * scaleFactor);
+        windowHeight = static_cast<int>(windowHeight * scaleFactor);
+    }
+    this->resize(windowWidth, windowHeight);
+    updateDisplaydImage();
+}
 void ImageViewer::updateDisplaydImage() {
     if (imageLabel) {
         imageLabel->setPixmap(QPixmap::fromImage(this->image));
