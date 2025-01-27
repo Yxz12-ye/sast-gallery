@@ -4,8 +4,8 @@
 #include <QDateTime>
 #include <QEvent>
 #include <QFutureWatcher>
-#include <QGraphicsColorizeEffect>
 #include <QLabel>
+#include <QPixmap>
 
 // display media in thumbnail, supposed to be work with ImageFlexLayout
 class MediaPreviewer : public QLabel {
@@ -32,11 +32,6 @@ signals:
 public slots:
     void loadImageComplete();
 
-protected:
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
-    void enterEvent(QEnterEvent* event) override;
-    void leaveEvent(QEvent* event) override;
-
 private:
     QString filepath;
     QDateTime lastModified;
@@ -47,15 +42,20 @@ private:
     bool requireReloadImage = true;
     QFutureWatcher<QPixmap> imageLoadWatcher;
 
-    QGraphicsColorizeEffect* colorizeEffect;
+    QPixmap originalPixmap;
 
     void initMedia();
     static QPixmap roundedPixmap(const QPixmap& original, double radius);
     QPixmap loadImage();
 
-    void propertyAnimation(QObject* target,
-                           const QByteArray& propertyName,
-                           const QVariant& startValue,
-                           const QVariant& endValue,
-                           int duration = 200);
+    void enterEvent(QEnterEvent* event) override;
+    void leaveEvent(QEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
+
+    // scale the content while keeping the geometry for layout stability
+    QPixmap scalePixmapContent(qreal scaleFactor);
+
+    void scaleAnimation(qreal startScale, qreal endScale, int duration = 200);
 };

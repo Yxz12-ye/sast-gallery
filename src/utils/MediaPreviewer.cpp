@@ -2,7 +2,6 @@
 #include <QImageReader>
 #include <QPainter>
 #include <QPainterPath>
-#include <QPixmap>
 #include <QPropertyAnimation>
 #include <QtConcurrentRun>
 #include <model/MediaListModel.h>
@@ -13,12 +12,6 @@ MediaPreviewer::MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget*
     lastModified = model->data(model->index(rowIndex, MediaListModel::LastModifiedTime))
                        .value<QDateTime>();
     isFav = model->data(model->index(rowIndex, MediaListModel::IsFavorite)).value<bool>();
-
-    colorizeEffect = new QGraphicsColorizeEffect(this);
-    colorizeEffect->setColor(Qt::white);
-    colorizeEffect->setStrength(0.0);
-    setGraphicsEffect(colorizeEffect);
-
     connect(&imageLoadWatcher,
             &QFutureWatcher<QPixmap*>::finished,
             this,
@@ -88,22 +81,8 @@ QPixmap MediaPreviewer::roundedPixmap(const QPixmap& original, double radius) {
 }
 
 void MediaPreviewer::loadImageComplete() {
-    setPixmap(imageLoadWatcher.result());
-}
-
-void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
-    QLabel::mouseDoubleClickEvent(event);
-    emit doubleClicked();
-}
-
-void MediaPreviewer::enterEvent(QEnterEvent* event) {
-    QLabel::enterEvent(event);
-    propertyAnimation(colorizeEffect, "strength", colorizeEffect->strength(), 0.15);
-}
-
-void MediaPreviewer::leaveEvent(QEvent* event) {
-    QLabel::leaveEvent(event);
-    propertyAnimation(colorizeEffect, "strength", colorizeEffect->strength(), 0.0);
+    originalPixmap = imageLoadWatcher.result();
+    setPixmap(originalPixmap);
 }
 
 QPixmap MediaPreviewer::loadImage() {
@@ -112,14 +91,58 @@ QPixmap MediaPreviewer::loadImage() {
     return roundedPixmap(QPixmap::fromImage(reader.read()), 4);
 }
 
-void MediaPreviewer::propertyAnimation(QObject* target,
-                                       const QByteArray& propertyName,
-                                       const QVariant& startValue,
-                                       const QVariant& endValue,
-                                       int duration) {
-    auto* animation = new QPropertyAnimation(target, propertyName);
+void MediaPreviewer::enterEvent(QEnterEvent* event) {
+    QLabel::enterEvent(event);
+    setCursor(Qt::PointingHandCursor);
+}
+
+void MediaPreviewer::leaveEvent(QEvent* event) {
+    QLabel::leaveEvent(event);
+    setCursor(Qt::ArrowCursor);
+}
+
+void MediaPreviewer::mousePressEvent(QMouseEvent* event) {
+    QLabel::mousePressEvent(event);
+    scaleAnimation(1.0, 0.95);
+}
+
+void MediaPreviewer::mouseReleaseEvent(QMouseEvent* event) {
+    QLabel::mouseReleaseEvent(event);
+    scaleAnimation(0.95, 1.0);
+}
+
+void MediaPreviewer::mouseDoubleClickEvent(QMouseEvent* event) {
+    QLabel::mouseDoubleClickEvent(event);
+    emit doubleClicked();
+}
+
+QPixmap MediaPreviewer::scalePixmapContent(qreal scaleFactor) {
+    QSize originalSize = originalPixmap.size();
+    QSize scaledSize = originalSize * scaleFactor;
+    QPixmap target(originalPixmap.size());
+    target.fill(Qt::transparent);
+
+    QPainter painter(&target);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+    painter.drawPixmap((originalSize.width() - scaledSize.width()) / 2,
+                       (originalSize.height() - scaledSize.height()) / 2,
+                       originalPixmap.scaled(scaledSize,
+                                             Qt::KeepAspectRatio,
+                                             Qt::SmoothTransformation));
+    return target;
+}
+
+void MediaPreviewer::scaleAnimation(qreal startScale, qreal endScale, int duration) {
+    auto* animation = new QPropertyAnimation(this, "scaleFactor");
     animation->setDuration(duration);
-    animation->setStartValue(startValue);
-    animation->setEndValue(endValue);
+    animation->setStartValue(startScale);
+    animation->setEndValue(endScale);
+    connect(animation, &QPropertyAnimation::valueChanged, this, [=, this]() {
+        if (!originalPixmap.isNull()) {
+            setPixmap(scalePixmapContent(animation->currentValue().toReal()));
+        }
+    });
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
