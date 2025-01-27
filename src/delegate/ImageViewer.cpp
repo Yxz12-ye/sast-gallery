@@ -6,7 +6,8 @@ ImageViewer::ImageViewer(QWidget* parent)
     , layout(new QVBoxLayout(this))
     , scaleFactor(1.0) {
     setAttribute(Qt::WA_TranslucentBackground);
-    setWindowFlags(Qt::FramelessWindowHint);
+    // setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Widget);
     imageLabel = new QLabel(this);
     layout->addWidget(imageLabel);
 }

@@ -31,8 +31,11 @@ void ViewingWindow::initWindow() {
 void ViewingWindow::initContent() {
     // TODO: implement this to display images mimicking Windows Photo Viewer's UI
     imageViewer = new ImageViewer(this);
-    QVBoxLayout* viewLayout = new QVBoxLayout(this);
-    viewLayout->addWidget(imageViewer);
+    // QVBoxLayout* viewLayout = new QVBoxLayout(this);
+    QWidget* centralWidget = new QWidget(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    // mainLayout->addWidget(imageViewer);
+
     // Create menu bar
     ElaMenuBar* menuBar = new ElaMenuBar(this);
 
@@ -54,7 +57,7 @@ void ViewingWindow::initContent() {
     menuBar->setMaximumHeight(25);
     fileMenu->setMinimumWidth(50);
 
-    // put image relevant parts here and add them to viewLayout between menuBar and operationLayout
+    // put image relevant parts here and add them to mainLayout between menuBar and operationLayout
 
     // placeholder for image, remove this when actual image is displayed
     ElaGraphicsScene* scene = new ElaGraphicsScene(this);
@@ -66,10 +69,11 @@ void ViewingWindow::initContent() {
     scene->addItem(item1);
     ElaGraphicsView* view = new ElaGraphicsView(scene);
     view->setScene(scene);
-    view->setFixedHeight(600);
+    view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout* graphicsLayout = new QVBoxLayout();
     graphicsLayout->addWidget(view);
+    graphicsLayout->addWidget(imageViewer);
 
     // Create buttons
     QHBoxLayout* operationLayout = new QHBoxLayout(this);
@@ -127,16 +131,17 @@ void ViewingWindow::initContent() {
     operationLayout->addWidget(zoom2originalButton);
 
     // Add menu bar and buttons to layout
-    viewLayout->insertWidget(0, menuBar);
-    viewLayout->addStretch();
-    viewLayout->addLayout(graphicsLayout);
-    viewLayout->addStretch();
-    viewLayout->addLayout(operationLayout);
-    viewLayout->setAlignment(Qt::AlignTop);
+    mainLayout->addWidget(menuBar);
+    mainLayout->addLayout(graphicsLayout);
+    mainLayout->addLayout(operationLayout);
+    // mainLayout->insertWidget(0, menuBar);
+    // mainLayout->addStretch();
+    // mainLayout->addLayout(graphicsLayout);
+    // mainLayout->addStretch();
+    // mainLayout->addLayout(operationLayout);
+    // mainLayout->setAlignment(Qt::AlignTop);
     // Set custom widget to the title bar
 
-    QWidget* centralWidget = new QWidget(this);
-    centralWidget->setLayout(viewLayout);
     setCentralWidget(centralWidget);
 
     // show actions info when pointing at them
@@ -156,7 +161,6 @@ void ViewingWindow::initContent() {
     zoom2originalButton->setStatusTip("Zoom to original size");
 
     ZoomableGraphicsView* zoomableGraphicsView = new ZoomableGraphicsView(scene);
-    view->setFixedHeight(600);
     graphicsLayout->addWidget(view);
 
     // connect to actions

@@ -39,11 +39,11 @@ protected:
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::TextAntialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
-        p.fillRect(rect(), {100, 100, 100, 128});
-        p.setPen({200, 200, 255});
-        p.setFont({"arial,helvetica", 48});
-        p.drawText(rect(), "IMAGE HERE", Qt::AlignBottom | Qt::AlignRight);
-        p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
+        //p.fillRect(rect(), {100, 100, 100, 128});
+        //p.setPen({200, 200, 255});
+        //p.setFont({"arial,helvetica", 48});
+        // p.drawText(rect(), "IMAGE HERE", Qt::AlignBottom | Qt::AlignRight);
+        // p.drawText(rect(), "IMAGE HERE", Qt::AlignTop | Qt::AlignLeft);
     }
 
     /*
