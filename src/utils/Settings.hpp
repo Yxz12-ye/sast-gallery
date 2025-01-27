@@ -36,7 +36,7 @@ inline void initSettings() {
     if (!settings.contains("wheelBehavior")) {
         settings.setValue("wheelBehavior", 0);
     }
-    if (!settings.contains("deletionSwitch")) {
-        settings.setValue("deletionSwitch", true);
+    if (!settings.contains("confirmDeletion")) {
+        settings.setValue("confirmDeletion", true);
     }
 }
