@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QScreen>
 #include <model/MediaListModel.h>
+#include <qabstractitemmodel.h>
 #include <utils/Tools.h>
 #include <view/MediaViewer.h>
 
@@ -26,6 +27,14 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
     filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
                    .value<QString>();
     loadImagefromDisk(filepath);
+    connect(mediaListModel,
+            &QAbstractItemModel::rowsInserted,
+            this,
+            &MediaViewerDelegate::onModelRowsInserted);
+    connect(mediaListModel,
+            &QAbstractItemModel::rowsRemoved,
+            this,
+            &MediaViewerDelegate::onModelRowsRemoved);
 }
 
 void MediaViewerDelegate::initConnections() {
@@ -112,9 +121,45 @@ void MediaViewerDelegate::initConnections() {
     });
 }
 
-void MediaViewerDelegate::onAppendEntries(const QStringList& paths) {}
+void MediaViewerDelegate::onModelRowsInserted(const QModelIndex& parent, int first, int last) {
+    // find the new rowIndex of the current image in the proxy model
+    QModelIndexList indexes = mediaListModel->match(mediaListModel->index(0, MediaListModel::Path),
+                                                    Qt::DisplayRole,
+                                                    filepath);
+    if (!indexes.isEmpty() && rowIndex != indexes.first().row()) {
+        rowIndex = indexes.first().row();
+        filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
+                       .value<QString>();
+        loadImagefromDisk(filepath);
+        view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
+        view->imageLabel->setScaledContents(true);
+    }
+}
 
-void MediaViewerDelegate::onRemoveEntries(const QStringList& paths) {}
+void MediaViewerDelegate::onModelRowsRemoved(const QModelIndex& parent, int first, int last) {
+    // find the new rowIndex of the current image in the proxy model
+    QModelIndexList indexes = mediaListModel->match(mediaListModel->index(0, MediaListModel::Path),
+                                                    Qt::DisplayRole,
+                                                    filepath);
+    if (!indexes.isEmpty()) {
+        rowIndex = indexes.first().row();
+    } else {
+        // current image is deleted, load the nearest image, right first, then left
+        if (rowIndex <= mediaListModel->rowCount() - 1) {
+            // rowIndex keep the same
+        } else if (mediaListModel->rowCount() > 0) {
+            rowIndex = mediaListModel->rowCount() - 1;
+        } else if (mediaListModel->rowCount() == 0) {
+            view->close();
+            return;
+        }
+    }
+    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
+                   .value<QString>();
+    loadImagefromDisk(filepath);
+    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
+    view->imageLabel->setScaledContents(true);
+}
 
 bool MediaViewerDelegate::copyImageToClipboard() {
     if (this->image.isNull()) {
@@ -189,7 +234,7 @@ void MediaViewerDelegate::adaptiveResize() {
 }
 
 void MediaViewerDelegate::deleteImage() {
-    if (settings.value("deletionSwitch").toBool()) {
+    if (settings.value("confirmDeletion").toBool()) {
         // ask before deletion
         auto* confirmDialog = new ElaContentDialog(view);
         confirmDialog->setWindowTitle("Confirm Deletion");
@@ -236,6 +281,9 @@ void MediaViewerDelegate::prevImage() {
     }
     filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
                    .value<QString>();
+    loadImagefromDisk(filepath);
+    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
+    view->imageLabel->setScaledContents(true);
 }
 
 void MediaViewerDelegate::nextImage() {
@@ -246,6 +294,9 @@ void MediaViewerDelegate::nextImage() {
     }
     filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
                    .value<QString>();
+    loadImagefromDisk(filepath);
+    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
+    view->imageLabel->setScaledContents(true);
 }
 
 void MediaViewerDelegate::rotateImage() {}

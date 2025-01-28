@@ -21,8 +21,8 @@ public:
     void initConnections();
 
 public slots:
-    void onAppendEntries(const QStringList& paths);
-    void onRemoveEntries(const QStringList& paths);
+    void onModelRowsInserted(const QModelIndex& parent, int first, int last);
+    void onModelRowsRemoved(const QModelIndex& parent, int first, int last);
     bool copyImageToClipboard();
     void openImageFileDialog();
     void saveImageFileDialog();
