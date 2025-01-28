@@ -95,6 +95,7 @@ void MediaViewerDelegate::initConnections() {
         scaleFactor += 0.1;
         if (scaleFactor > 3)
             scaleFactor = 3;
+        scaleImage(scaleFactor);
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         view->zoomSlider->setValue(scaleFactor * 100);
     });
@@ -283,7 +284,14 @@ void MediaViewerDelegate::nextImage() {
     loadImage(this->image);
 }
 
-void MediaViewerDelegate::rotateImage() {}
+void MediaViewerDelegate::rotateImage() {
+    QTransform transform;
+    transform.rotate(90);
+    this->image = this->image.transformed(transform);
+    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
+    view->imageLabel->setScaledContents(true);
+    view->imageLabel->resize(view->imageLabel->pixmap().size());
+}
 
 bool MediaViewerDelegate::loadImagefromDisk(const QString& path) {
     try {
