@@ -37,6 +37,26 @@ git submodule update --init --recursive
 
 使用你的 IDE (QtCreator等) 来打开项目. 只支持 `CMake` 构建.
 
+### 提交检查 Hook
+
+此项目使用 [pre-commit](https://pre-commit.com/) 进行提交检查，以确保代码风格一致性。请先安装 pre-commit 工具：
+
+```bash
+# 对于 Arch Linux
+sudo pacman -S pre-commit
+# 对于 Pipx 用户（跨平台）
+pipx install pre-commit
+```
+
+然后，在克隆项目后，执行以下命令安装 pre-commit 钩子：
+
+```bash
+pre-commit install
+```
+
+> [!TIP]  
+> 如果您发现工具提供的结果不可靠，可以使用 `git commit --no-verify` 暂时跳过提交检查。
+
 ### 已知问题及解决方法
 
 - **Linux平台CMake生成报错**
