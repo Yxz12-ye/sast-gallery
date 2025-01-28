@@ -2,6 +2,7 @@
 #include <ElaMenu.h>
 #include <ElaMenuBar.h>
 #include <QDir>
+#include <QScreen>
 #include <delegate/MediaViewerDelegate.h>
 #include <qpixmap.h>
 #include <utils/Tools.h>
@@ -22,8 +23,6 @@ void MediaViewer::initWindow() {
 }
 
 void MediaViewer::initContent() {
-    // TODO: implement this to display images mimicking Windows Photo Viewer's UI
-
     auto* centralWidget = new QWidget(this);
     auto* mainLayout = new QVBoxLayout(centralWidget);
 
@@ -123,7 +122,7 @@ void MediaViewer::initContent() {
 
     setCentralWidget(centralWidget);
 
-    // show actions info when pointing at them
+    // show actions status tips when pointing at them
     openFileAction->setStatusTip("Open a file");
     copyFileAction->setStatusTip("Copy a file");
     saveasFileAction->setStatusTip("Save a file as");

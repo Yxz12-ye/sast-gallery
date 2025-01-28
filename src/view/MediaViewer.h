@@ -5,6 +5,7 @@
 #include <ElaSlider.h>
 #include <ElaText.h>
 #include <QAbstractItemModel>
+#include <QApplication>
 #include <qaction.h>
 
 class MediaViewerDelegate;

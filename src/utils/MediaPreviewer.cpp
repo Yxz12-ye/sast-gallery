@@ -19,7 +19,7 @@ MediaPreviewer::MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget*
     setScaledContents(true);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     initMedia();
-    // TODO: open the image in a ViewingWindow when double clicked
+    // TODO: open the image in a MediaViewer window when double clicked
 }
 
 MediaPreviewer::~MediaPreviewer() {}

@@ -37,6 +37,14 @@ void MediaViewerDelegate::initConnections() {
     // connect to actions
     connect(view->openFileAction, &QAction::triggered, this, [this]() {
         openImageFileDialog();
+        if (this->image.isNull()) {
+            ElaMessageBar::error(ElaMessageBarType::PositionPolicy::TopRight,
+                                 "Error",
+                                 "Image failed to load, plz load image first",
+                                 3000,
+                                 view);
+        }
+
         QScreen* screen = QGuiApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         int screenWidth = screenGeometry.width();
