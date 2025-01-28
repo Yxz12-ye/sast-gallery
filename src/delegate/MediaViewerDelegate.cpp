@@ -40,11 +40,11 @@ void MediaViewerDelegate::initConnections() {
         if (this->image.isNull()) {
             ElaMessageBar::error(ElaMessageBarType::PositionPolicy::TopRight,
                                  "Error",
-                                 "Image failed to load, plz load image first",
+                                 "Image failed to load",
                                  3000,
                                  view);
         }
-
+        loadImage(this->image);
         QScreen* screen = QGuiApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         int screenWidth = screenGeometry.width();
@@ -92,7 +92,7 @@ void MediaViewerDelegate::initConnections() {
     connect(view->fileInfoButton, &ElaIconButton::clicked, this, &MediaViewerDelegate::readFullInfo);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor *= 1.2;
+        scaleFactor += 0.2;
         if (scaleFactor > 3)
             scaleFactor = 3;
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
@@ -100,7 +100,7 @@ void MediaViewerDelegate::initConnections() {
     });
 
     connect(view->zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor /= 1.2;
+        scaleFactor -= 0.2;
         if (scaleFactor < 0.2)
             scaleFactor = 0.1;
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
@@ -310,6 +310,7 @@ bool MediaViewerDelegate::loadImage(const QImage& image) {
         if (view->imageLabel) {
             view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
             view->imageLabel->setScaledContents(true);
+            view->imageLabel->resize(view->imageLabel->pixmap().size());
         }
         return true;
     } catch (...) {
