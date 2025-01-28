@@ -123,12 +123,11 @@ void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int 
             check if there is any image after the current image, 
             if not, check if there is any image before the current image
         */
-        if (mediaIndex.row() <= mediaListModel->rowCount() - 1
-            && last < mediaListModel->rowCount() - 1) {
+        if (last < mediaListModel->rowCount() - 1) {
             mediaIndex = mediaListModel->index(last + 1, MediaListModel::Path);
         } else if (first > 0) {
             mediaIndex = mediaListModel->index(first - 1, MediaListModel::Path);
-        } else if (mediaListModel->rowCount() == 0) {
+        } else {
             view->close();
             return;
         }
