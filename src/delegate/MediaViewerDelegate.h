@@ -3,6 +3,7 @@
 #include <QAbstractItemModel>
 #include <QImage>
 #include <QObject>
+#include <QPersistentModelIndex>
 #include <QVBoxLayout>
 
 class MediaViewer;
@@ -21,8 +22,7 @@ public:
     void initConnections();
 
 public slots:
-    void onModelRowsInserted(const QModelIndex& parent, int first, int last);
-    void onModelRowsRemoved(const QModelIndex& parent, int first, int last);
+    void onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last);
     bool copyImageToClipboard();
     void openImageFileDialog();
     void saveImageFileDialog();
@@ -35,7 +35,7 @@ public slots:
 
 private:
     QAbstractItemModel* mediaListModel;
-    int rowIndex;
+    QPersistentModelIndex mediaIndex;
     QImage image;
     QString filepath;
     MediaViewer* view;

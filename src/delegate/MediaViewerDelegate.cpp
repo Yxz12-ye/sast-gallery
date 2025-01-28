@@ -1,5 +1,4 @@
 #include "MediaViewerDelegate.h"
-#include "utils/Settings.hpp"
 #include <ElaContentDialog.h>
 #include <ElaMessageBar.h>
 #include <ElaText.h>
@@ -12,7 +11,7 @@
 #include <QMessageBox>
 #include <QScreen>
 #include <model/MediaListModel.h>
-#include <qabstractitemmodel.h>
+#include <utils/Settings.hpp>
 #include <utils/Tools.h>
 #include <view/MediaViewer.h>
 
@@ -22,19 +21,14 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
                                          QObject* parent)
     : QObject(parent)
     , mediaListModel(model)
-    , rowIndex(index)
+    , mediaIndex(model->index(index, MediaListModel::Path))
     , view(view) {
-    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
-                   .value<QString>();
+    filepath = mediaIndex.data().value<QString>();
     loadImagefromDisk(filepath);
     connect(mediaListModel,
-            &QAbstractItemModel::rowsInserted,
+            &QAbstractItemModel::rowsAboutToBeRemoved,
             this,
-            &MediaViewerDelegate::onModelRowsInserted);
-    connect(mediaListModel,
-            &QAbstractItemModel::rowsRemoved,
-            this,
-            &MediaViewerDelegate::onModelRowsRemoved);
+            &MediaViewerDelegate::onModelRowsToBeRemoved);
 }
 
 void MediaViewerDelegate::initConnections() {
@@ -121,44 +115,27 @@ void MediaViewerDelegate::initConnections() {
     });
 }
 
-void MediaViewerDelegate::onModelRowsInserted(const QModelIndex& parent, int first, int last) {
-    // find the new rowIndex of the current image in the proxy model
-    QModelIndexList indexes = mediaListModel->match(mediaListModel->index(0, MediaListModel::Path),
-                                                    Qt::DisplayRole,
-                                                    filepath);
-    if (!indexes.isEmpty() && rowIndex != indexes.first().row()) {
-        rowIndex = indexes.first().row();
-        filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
-                       .value<QString>();
-        loadImagefromDisk(filepath);
-        view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-        view->imageLabel->setScaledContents(true);
-    }
-}
-
-void MediaViewerDelegate::onModelRowsRemoved(const QModelIndex& parent, int first, int last) {
-    // find the new rowIndex of the current image in the proxy model
-    QModelIndexList indexes = mediaListModel->match(mediaListModel->index(0, MediaListModel::Path),
-                                                    Qt::DisplayRole,
-                                                    filepath);
-    if (!indexes.isEmpty()) {
-        rowIndex = indexes.first().row();
-    } else {
-        // current image is deleted, load the nearest image, right first, then left
-        if (rowIndex <= mediaListModel->rowCount() - 1) {
-            // rowIndex keep the same
-        } else if (mediaListModel->rowCount() > 0) {
-            rowIndex = mediaListModel->rowCount() - 1;
+void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last) {
+    // check if the current image is deleted
+    if (mediaIndex.row() >= first && mediaIndex.row() <= last) {
+        /* 
+            current image is deleted, load the nearest image
+            check if there is any image after the current image, 
+            if not, check if there is any image before the current image
+        */
+        if (mediaIndex.row() <= mediaListModel->rowCount() - 1
+            && last < mediaListModel->rowCount() - 1) {
+            mediaIndex = mediaListModel->index(last + 1, MediaListModel::Path);
+        } else if (first > 0) {
+            mediaIndex = mediaListModel->index(first - 1, MediaListModel::Path);
         } else if (mediaListModel->rowCount() == 0) {
             view->close();
             return;
         }
+        filepath = mediaIndex.data().value<QString>();
+        loadImagefromDisk(filepath);
+        loadImage(this->image);
     }
-    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
-                   .value<QString>();
-    loadImagefromDisk(filepath);
-    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-    view->imageLabel->setScaledContents(true);
 }
 
 bool MediaViewerDelegate::copyImageToClipboard() {
@@ -274,29 +251,25 @@ void MediaViewerDelegate::deleteImage() {
 }
 
 void MediaViewerDelegate::prevImage() {
-    if (rowIndex > 0) {
-        rowIndex--;
+    if (mediaIndex.row() > 0) {
+        mediaIndex = mediaListModel->index(mediaIndex.row() - 1, MediaListModel::Path);
     } else {
-        rowIndex = mediaListModel->rowCount() - 1;
+        mediaIndex = mediaListModel->index(mediaListModel->rowCount() - 1, MediaListModel::Path);
     }
-    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
-                   .value<QString>();
+    filepath = mediaIndex.data().value<QString>();
     loadImagefromDisk(filepath);
-    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-    view->imageLabel->setScaledContents(true);
+    loadImage(this->image);
 }
 
 void MediaViewerDelegate::nextImage() {
-    if (rowIndex < mediaListModel->rowCount() - 1) {
-        rowIndex++;
+    if (mediaIndex.row() < mediaListModel->rowCount() - 1) {
+        mediaIndex = mediaListModel->index(mediaIndex.row() + 1, MediaListModel::Path);
     } else {
-        rowIndex = 0;
+        mediaIndex = mediaListModel->index(0, MediaListModel::Path);
     }
-    filepath = mediaListModel->data(mediaListModel->index(rowIndex, MediaListModel::Path))
-                   .value<QString>();
+    filepath = mediaIndex.data().value<QString>();
     loadImagefromDisk(filepath);
-    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-    view->imageLabel->setScaledContents(true);
+    loadImage(this->image);
 }
 
 void MediaViewerDelegate::rotateImage() {}
