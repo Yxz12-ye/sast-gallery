@@ -9,6 +9,7 @@
 #include <QGuiApplication>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QPaintDevice>
 #include <QScreen>
 #include <model/MediaListModel.h>
 #include <utils/Settings.hpp>
@@ -22,7 +23,12 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
     : QObject(parent)
     , mediaListModel(model)
     , mediaIndex(model->index(index, MediaListModel::Path))
+    , scaleFactor(1.0)
     , view(view) {
+    view->zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
+    view->zoomSlider->setRange(1, 300);
+    view->zoomSlider->setValue(100);
+    view->zoomSlider->setMaximumWidth(300);
     filepath = mediaIndex.data().value<QString>();
     loadImagefromDisk(filepath);
     connect(mediaListModel,
@@ -44,8 +50,7 @@ void MediaViewerDelegate::initConnections() {
         int windowHeight = screenHeight / 2;
         view->resize(windowWidth, windowHeight);
 
-        // if you wanna adapt to your monitor resolution, use this
-        // imageViewer->adaptiveResize();
+        // if you wanna adapt to your monitor resolution, use adaptiveResize();
     });
     connect(view->copyFileAction,
             &QAction::triggered,
@@ -83,17 +88,19 @@ void MediaViewerDelegate::initConnections() {
     connect(view->fileInfoButton, &ElaIconButton::clicked, this, &MediaViewerDelegate::readFullInfo);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFactor *= 1.2;
-        // if (scaleFactor > 3) scaleFactor = 3;
-        // zoomSlider->setToolTip(QString::number(scaleFacor * 100));
-        // zoomSlider->setValue(scaleFactor * 100);
+        scaleFactor *= 1.2;
+        if (scaleFactor > 3)
+            scaleFactor = 3;
+        view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
+        view->zoomSlider->setValue(scaleFactor * 100);
     });
 
     connect(view->zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFactor /= 0.2;
-        // if (scaleFactor < 0.2) scaleFactor = 0.1;
-        // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
-        // zoomSlider->setValue(scaleFactor * 100);
+        scaleFactor /= 1.2;
+        if (scaleFactor < 0.2)
+            scaleFactor = 0.1;
+        view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
+        view->zoomSlider->setValue(scaleFactor * 100);
     });
 
     connect(view->maximizeButton, &ElaIconButton::clicked, this, [=]() {
@@ -101,9 +108,9 @@ void MediaViewerDelegate::initConnections() {
     });
 
     connect(view->zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
-        // scaleFactor = 1;
-        // zoomSlider->setToolTip(QString::number(scaleFactor * 100));
-        // zoomSlider->setValue(scaleFactor * 100);
+        scaleFactor = 1;
+        view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
+        view->zoomSlider->setValue(scaleFactor * 100);
     });
 
     connect(view->zoomSlider, &ElaSlider::valueChanged, this, [=](int value) {
