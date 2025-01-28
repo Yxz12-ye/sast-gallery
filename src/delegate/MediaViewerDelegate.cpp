@@ -92,7 +92,7 @@ void MediaViewerDelegate::initConnections() {
     connect(view->fileInfoButton, &ElaIconButton::clicked, this, &MediaViewerDelegate::readFullInfo);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor += 0.2;
+        scaleFactor += 0.1;
         if (scaleFactor > 3)
             scaleFactor = 3;
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
@@ -100,9 +100,10 @@ void MediaViewerDelegate::initConnections() {
     });
 
     connect(view->zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor -= 0.2;
+        scaleFactor -= 0.1;
         if (scaleFactor < 0.2)
             scaleFactor = 0.1;
+        scaleImage(scaleFactor);
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         view->zoomSlider->setValue(scaleFactor * 100);
     });
@@ -112,7 +113,7 @@ void MediaViewerDelegate::initConnections() {
     });
 
     connect(view->zoom2originalButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor = 1;
+        scaleImage(1.0);
         view->zoomSlider->setToolTip(QString::number(scaleFactor * 100));
         view->zoomSlider->setValue(scaleFactor * 100);
     });
@@ -316,4 +317,9 @@ bool MediaViewerDelegate::loadImage(const QImage& image) {
     } catch (...) {
         return false;
     }
+}
+
+void MediaViewerDelegate::scaleImage(double factor) {
+    scaleFactor = factor;
+    view->imageLabel->resize(scaleFactor * view->imageLabel->pixmap().size());
 }

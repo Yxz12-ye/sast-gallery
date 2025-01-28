@@ -44,4 +44,5 @@ private:
 
     bool loadImagefromDisk(const QString& path);
     bool loadImage(const QImage& image);
+    void scaleImage(double factor);
 };
