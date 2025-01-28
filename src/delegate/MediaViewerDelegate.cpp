@@ -25,10 +25,6 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
     , mediaIndex(model->index(index, MediaListModel::Path))
     , scaleFactor(1.0)
     , view(view) {
-    view->zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
-    view->zoomSlider->setRange(1, 300);
-    view->zoomSlider->setValue(100);
-    view->zoomSlider->setMaximumWidth(300);
     filepath = mediaIndex.data().value<QString>();
     loadImagefromDisk(filepath);
     connect(mediaListModel,

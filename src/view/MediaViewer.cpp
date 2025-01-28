@@ -81,11 +81,12 @@ void MediaViewer::initContent() {
     zoomInButton = new ElaIconButton(ElaIconType::MagnifyingGlassPlus);
     zoomInButton->setMaximumWidth(25);
 
-    ElaSlider* zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
+    zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
     // range from 1% to 300% scaleFactor: 0.01 to 3.00
     // scaleFactor = 1 + zoomSlider->value() / 100
     zoomSlider->setRange(1, 300); //percentage of zoom
-    zoomSlider->setMaximumWidth(200);
+    zoomSlider->setValue(100);
+    zoomSlider->setMaximumWidth(300);
 
     zoomOutButton = new ElaIconButton(ElaIconType::MagnifyingGlassMinus);
     zoomOutButton->setMaximumWidth(25);

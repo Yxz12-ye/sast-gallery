@@ -16,7 +16,7 @@ class MediaViewer : public ElaCustomWidget {
 public:
     explicit MediaViewer(QAbstractItemModel* model, int index, QWidget* parent = nullptr);
     ~MediaViewer();
-
+    QSlider* getZoomSlider() const { return zoomSlider; }
     void initWindow();
     void initContent();
 
