@@ -288,9 +288,7 @@ void MediaViewerDelegate::rotateImage() {
     QTransform transform;
     transform.rotate(90);
     this->image = this->image.transformed(transform);
-    view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-    view->imageLabel->setScaledContents(true);
-    view->imageLabel->resize(view->imageLabel->pixmap().size());
+    view->imageViewer->setContent(QPixmap::fromImage(this->image));
 }
 
 bool MediaViewerDelegate::loadImagefromDisk(const QString& path) {
@@ -315,13 +313,15 @@ bool MediaViewerDelegate::loadImage(const QImage& image) {
         if (image.isNull()) {
             return false;
         }
-        this->image = image;
-        if (view->imageLabel) {
-            view->imageLabel->setPixmap(QPixmap::fromImage(this->image));
-            view->imageLabel->setScaledContents(true);
-            view->imageLabel->resize(view->imageLabel->pixmap().size());
+        if (this->image != image) {
+            this->image = image;
+            view->imageViewer->setContent(QPixmap::fromImage(this->image));
+            view->fileInfoBriefText->setText(QString("%1 x %2 %3")
+                                                 .arg(QString::number(QImage(filepath).width()))
+                                                 .arg(QString::number(QImage(filepath).height()))
+                                                 .arg(Tools::fileSizeString(filepath)));
+            return true;
         }
-        return true;
     } catch (...) {
         return false;
     }
@@ -329,5 +329,5 @@ bool MediaViewerDelegate::loadImage(const QImage& image) {
 
 void MediaViewerDelegate::scaleImage(double factor) {
     scaleFactor = factor;
-    view->imageLabel->resize(scaleFactor * view->imageLabel->pixmap().size());
+    view->imageViewer->scale(scaleFactor, scaleFactor);
 }

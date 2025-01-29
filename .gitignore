@@ -63,3 +63,6 @@ CMakeLists.txt.user
 
 # cmake install path
 install
+
+# language server protocol
+.clangd

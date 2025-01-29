@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ImageViewer.h"
 #include <ElaCustomWidget.h>
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
@@ -40,7 +41,7 @@ private:
     ElaIconButton* maximizeButton{};
     ElaIconButton* zoom2originalButton{};
     ElaText* fileInfoBriefText{};
-    QLabel* imageLabel;
+    ImageViewer* imageViewer;
 
     MediaViewerDelegate* delegate{};
 };

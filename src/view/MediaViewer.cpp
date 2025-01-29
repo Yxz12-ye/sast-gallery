@@ -4,7 +4,6 @@
 #include <QDir>
 #include <QScreen>
 #include <delegate/MediaViewerDelegate.h>
-#include <qpixmap.h>
 #include <utils/Tools.h>
 
 MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
@@ -50,10 +49,11 @@ void MediaViewer::initContent() {
     menuBar->setMaximumHeight(25);
     fileMenu->setMinimumWidth(50);
 
-    // put image relevant parts here and add them to mainLayout between menuBar and operationLayout
-    imageLabel = new QLabel(this);
-    imageLabel->setPixmap(QPixmap::fromImage(delegate->getImage()));
-    imageLabel->setScaledContents(true);
+    // image view
+    imageViewer = new ImageViewer(QPixmap::fromImage(delegate->getImage()), this);
+    imageViewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    imageViewer->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    imageViewer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // Create buttons
     QHBoxLayout* operationLayout = new QHBoxLayout(this);
@@ -114,9 +114,7 @@ void MediaViewer::initContent() {
 
     // Add menu bar and buttons to layout
     mainLayout->addWidget(menuBar);
-    mainLayout->addStretch();
-    mainLayout->addWidget(imageLabel);
-    mainLayout->addStretch();
+    mainLayout->addWidget(imageViewer);
     mainLayout->addLayout(operationLayout);
     mainLayout->setAlignment(Qt::AlignTop);
 
