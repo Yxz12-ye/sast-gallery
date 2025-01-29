@@ -21,6 +21,9 @@ public:
     [[nodiscard]] auto getImage() const { return this->image; }
     void initConnections();
 
+signals:
+    void imageChanged();
+
 public slots:
     void onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last);
     bool copyImageToClipboard();
@@ -42,7 +45,7 @@ private:
     QVBoxLayout* layout;
     double scaleFactor;
 
-    bool loadImagefromDisk(const QString& path);
+    bool loadImage(const QString& path);
     bool loadImage(const QImage& image);
     void scaleImage(double factor);
 };

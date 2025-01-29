@@ -26,7 +26,7 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
     , scaleFactor(1.0)
     , view(view) {
     filepath = mediaIndex.data().value<QString>();
-    loadImagefromDisk(filepath);
+    loadImage(filepath);
     connect(mediaListModel,
             &QAbstractItemModel::rowsAboutToBeRemoved,
             this,
@@ -126,6 +126,14 @@ void MediaViewerDelegate::initConnections() {
             view->zoomSlider->setValue(value);
         }
     });
+
+    connect(this, &MediaViewerDelegate::imageChanged, this, [this]() {
+        view->imageViewer->setContent(QPixmap::fromImage(image));
+        view->fileInfoBriefText->setText(QString("%1 x %2 %3")
+                                             .arg(QString::number(image.width()))
+                                             .arg(QString::number(QImage(image).height()))
+                                             .arg(Tools::fileSizeString(filepath)));
+    });
 }
 
 void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last) {
@@ -145,8 +153,7 @@ void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int 
             return;
         }
         filepath = mediaIndex.data().value<QString>();
-        loadImagefromDisk(filepath);
-        loadImage(this->image);
+        loadImage(filepath);
     }
 }
 
@@ -168,7 +175,7 @@ void MediaViewerDelegate::openImageFileDialog() {
                                             "",
                                             "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)");
     if (!filepath.isEmpty()) {
-        loadImagefromDisk(filepath);
+        loadImage(filepath);
     }
 }
 
@@ -269,8 +276,7 @@ void MediaViewerDelegate::prevImage() {
         mediaIndex = mediaListModel->index(mediaListModel->rowCount() - 1, MediaListModel::Path);
     }
     filepath = mediaIndex.data().value<QString>();
-    loadImagefromDisk(filepath);
-    loadImage(this->image);
+    loadImage(filepath);
 }
 
 void MediaViewerDelegate::nextImage() {
@@ -280,18 +286,17 @@ void MediaViewerDelegate::nextImage() {
         mediaIndex = mediaListModel->index(0, MediaListModel::Path);
     }
     filepath = mediaIndex.data().value<QString>();
-    loadImagefromDisk(filepath);
-    loadImage(this->image);
+    loadImage(filepath);
 }
 
 void MediaViewerDelegate::rotateImage() {
     QTransform transform;
     transform.rotate(90);
-    this->image = this->image.transformed(transform);
-    view->imageViewer->setContent(QPixmap::fromImage(this->image));
+    loadImage(image.transformed(transform));
+    image.save(filepath);
 }
 
-bool MediaViewerDelegate::loadImagefromDisk(const QString& path) {
+bool MediaViewerDelegate::loadImage(const QString& path) {
     try {
         if (path.isEmpty()) {
             return false;
@@ -300,9 +305,11 @@ bool MediaViewerDelegate::loadImagefromDisk(const QString& path) {
         if (loaded.isNull()) {
             return false;
         }
-        this->image = loaded;
-
-        return true;
+        if (this->image.isNull() || this->image != loaded) {
+            this->image = loaded;
+            emit imageChanged();
+            return true;
+        }
     } catch (...) {
         return false;
     }
@@ -313,13 +320,9 @@ bool MediaViewerDelegate::loadImage(const QImage& image) {
         if (image.isNull()) {
             return false;
         }
-        if (this->image != image) {
+        if (this->image.isNull() || this->image != image) {
             this->image = image;
-            view->imageViewer->setContent(QPixmap::fromImage(this->image));
-            view->fileInfoBriefText->setText(QString("%1 x %2 %3")
-                                                 .arg(QString::number(QImage(filepath).width()))
-                                                 .arg(QString::number(QImage(filepath).height()))
-                                                 .arg(Tools::fileSizeString(filepath)));
+            emit imageChanged();
             return true;
         }
     } catch (...) {

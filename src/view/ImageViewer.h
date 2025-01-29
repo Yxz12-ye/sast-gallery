@@ -4,7 +4,6 @@
 #include <QGraphicsView>
 #include <QMouseEvent>
 #include <QWheelEvent>
-#include <qgraphicsitem.h>
 
 class ImageViewer : public QGraphicsView {
     Q_OBJECT
