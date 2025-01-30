@@ -5,6 +5,7 @@
 
 ImageViewer::ImageViewer(QWidget* parent)
     : QGraphicsView(parent)
+    , scaleFactor(1.0)
     , scene(new QGraphicsScene(this))
     , pixmapItem(new QGraphicsPixmapItem())
     , dragging(false) {
@@ -53,16 +54,23 @@ void ImageViewer::setWheelZoom(bool enabled) {
     zoomEnabled = enabled;
 }
 
+void ImageViewer::setScaleFactor(double newFactor) {
+    if (scaleFactor != newFactor) {
+        scaleFactor = newFactor;
+        emit scaleFactorChanged(newFactor);
+    }
+}
+
 void ImageViewer::wheelEvent(QWheelEvent* event) {
-    if (!zoomEnabled) {
-        return;
-    }
-    const double scaleFactor = 1.15;
+    const double Factor = 1.15;
     if (event->angleDelta().y() > 0) {
-        scale(scaleFactor, scaleFactor);
+        scale(Factor, Factor);
+        scaleFactor *= (Factor * Factor);
     } else {
-        scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+        scale(1.0 / Factor, 1.0 / Factor);
+        scaleFactor /= (scaleFactor / (Factor * Factor));
     }
+    emit scaleFactorChanged(scaleFactor);
     event->accept();
 }
 

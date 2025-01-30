@@ -14,6 +14,10 @@ public:
     void setContent(const QPixmap& pixmap, bool fadeAnimation = true);
     void setContent(const QImage& image, bool fadeAnimation = true);
     void setWheelZoom(bool enabled);
+    void setScaleFactor(double scaleFactor);
+
+signals:
+    void scaleFactorChanged(double newFactor);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
@@ -28,6 +32,7 @@ private:
     QPoint lastMousePos;
     bool zoomEnabled;
     bool dragging;
+    double scaleFactor;
 
     void adjustImageToFit();
 };

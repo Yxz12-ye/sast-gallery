@@ -12,6 +12,10 @@ MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
     initWindow();
     initContent();
     delegate->initConnections();
+    connect(imageViewer,
+            &ImageViewer::scaleFactorChanged,
+            delegate,
+            &MediaViewerDelegate::setScaleFactor);
 }
 
 MediaViewer::~MediaViewer() {}

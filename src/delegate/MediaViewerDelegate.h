@@ -20,11 +20,13 @@ public:
 
     [[nodiscard]] auto getFilePath() const { return filepath; }
     [[nodiscard]] auto getImage() const { return this->image; }
+    void setScaleFactor(double newFactor) { scaleFactor = newFactor; }
     void initConnections();
     void wheelEvent(QWheelEvent* event);
 
 signals:
     void imageChanged(bool fadeAnimation = true);
+    void scaleFactorChanged(double newFactor);
 
 public slots:
     void onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last);

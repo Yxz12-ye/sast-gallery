@@ -137,6 +137,10 @@ void MediaViewerDelegate::initConnections() {
                                              .arg(Tools::fileSizeString(filepath)));
         view->setWindowTitle(QFileInfo(filepath).fileName());
     });
+    connect(view->imageViewer, &ImageViewer::scaleFactorChanged, this, [this](double newFactor) {
+        setScaleFactor(newFactor);
+        view->zoomSlider->setValue(newFactor * 100);
+    });
 }
 
 void MediaViewerDelegate::wheelEvent(QWheelEvent* event) {
