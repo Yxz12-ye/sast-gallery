@@ -62,13 +62,13 @@ void ImageViewer::setScaleFactor(double newFactor) {
 }
 
 void ImageViewer::wheelEvent(QWheelEvent* event) {
-    const double Factor = 1.15;
+    const double Factor = 1.05;
     if (event->angleDelta().y() > 0) {
         scale(Factor, Factor);
         scaleFactor *= (Factor * Factor);
     } else {
         scale(1.0 / Factor, 1.0 / Factor);
-        scaleFactor /= (scaleFactor / (Factor * Factor));
+        scaleFactor /= (scaleFactor / Factor);
     }
     emit scaleFactorChanged(scaleFactor);
     event->accept();

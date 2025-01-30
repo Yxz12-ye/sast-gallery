@@ -93,7 +93,7 @@ void MediaViewerDelegate::initConnections() {
     connect(view->fileInfoButton, &ElaIconButton::clicked, this, &MediaViewerDelegate::readFullInfo);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor += 0.1;
+        scaleFactor += 0.05;
         if (scaleFactor > 3)
             scaleFactor = 3;
         scaleImage(scaleFactor);
@@ -102,7 +102,7 @@ void MediaViewerDelegate::initConnections() {
     });
 
     connect(view->zoomOutButton, &ElaIconButton::clicked, this, [=]() {
-        scaleFactor -= 0.1;
+        scaleFactor -= 0.05;
         if (scaleFactor < 0.2)
             scaleFactor = 0.1;
         scaleImage(scaleFactor);
