@@ -1,17 +1,16 @@
 #pragma once
 
 #include "ImageViewer.h"
-#include <ElaCustomWidget.h>
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>
+#include <ElaWidget.h>
 #include <QAbstractItemModel>
 #include <QApplication>
-#include <qaction.h>
 
 class MediaViewerDelegate;
 
-class MediaViewer : public ElaCustomWidget {
+class MediaViewer : public ElaWidget {
     Q_OBJECT
     friend class MediaViewerDelegate;
 

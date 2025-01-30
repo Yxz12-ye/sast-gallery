@@ -4,11 +4,10 @@
 #include <QDir>
 #include <QScreen>
 #include <delegate/MediaViewerDelegate.h>
-#include <qobject.h>
 #include <utils/Tools.h>
 
 MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
-    : ElaCustomWidget(parent)
+    : ElaWidget(parent)
     , delegate(new MediaViewerDelegate(model, index, this, this)) {
     initWindow();
     initContent();
@@ -22,11 +21,12 @@ void MediaViewer::initWindow() {
     setMinimumSize(640, 480);
     QString fileName = QFileInfo(delegate->getFilePath()).fileName();
     setWindowTitle(fileName);
+    setWindowButtonFlag(ElaAppBarType::ButtonType::StayTopButtonHint, false);
+    setAttribute(Qt::WA_Hover);
 }
 
 void MediaViewer::initContent() {
-    auto* centralWidget = new QWidget(this);
-    auto* mainLayout = new QVBoxLayout(centralWidget);
+    auto* mainLayout = new QVBoxLayout(this);
 
     // Create menu bar
     auto* menuBar = new ElaMenuBar(this);
@@ -115,13 +115,11 @@ void MediaViewer::initContent() {
     operationLayout->addWidget(maximizeButton);
     operationLayout->addWidget(zoom2originalButton);
 
-    // Add menu bar and buttons to layout
+    // Main Layout
     mainLayout->addWidget(menuBar);
     mainLayout->addWidget(imageViewer);
     mainLayout->addLayout(operationLayout);
     mainLayout->setAlignment(Qt::AlignTop);
-
-    setCentralWidget(centralWidget);
 
     // show actions status tips when pointing at them
     openFileAction->setStatusTip("Open a file");
