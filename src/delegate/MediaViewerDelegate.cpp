@@ -122,6 +122,7 @@ void MediaViewerDelegate::initConnections() {
     connect(view->zoomSlider, &ElaSlider::valueChanged, this, [=](int value) {
         // range from 1% to 300%
         if (value >= 1 && value <= 300) {
+            scaleImage(value / 100.0);
             view->zoomSlider->setToolTip(QString::number(value));
             view->zoomSlider->setValue(value);
         }
