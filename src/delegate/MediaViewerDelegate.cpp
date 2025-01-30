@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QPaintDevice>
 #include <QScreen>
+#include <QtConcurrent>
 #include <model/MediaListModel.h>
 #include <utils/Settings.hpp>
 #include <utils/Tools.h>
@@ -128,13 +129,28 @@ void MediaViewerDelegate::initConnections() {
         }
     });
 
-    connect(this, &MediaViewerDelegate::imageChanged, this, [this]() {
-        view->imageViewer->setContent(QPixmap::fromImage(image));
+    connect(this, &MediaViewerDelegate::imageChanged, this, [this](bool fadeAnimation) {
+        view->imageViewer->setContent(image, fadeAnimation);
         view->fileInfoBriefText->setText(QString("%1 x %2 %3")
                                              .arg(QString::number(image.width()))
                                              .arg(QString::number(QImage(image).height()))
                                              .arg(Tools::fileSizeString(filepath)));
+        view->setWindowTitle(QFileInfo(filepath).fileName());
     });
+}
+
+void MediaViewerDelegate::wheelEvent(QWheelEvent* event) {
+    if (settings.value("wheelBehavior").toInt() == 0) {
+        view->imageViewer->setWheelZoom(true);
+    } else {
+        view->imageViewer->setWheelZoom(false);
+        if (event->angleDelta().y() > 0) {
+            prevImage();
+        } else {
+            nextImage();
+        }
+    }
+    event->accept();
 }
 
 void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last) {
@@ -293,11 +309,11 @@ void MediaViewerDelegate::nextImage() {
 void MediaViewerDelegate::rotateImage() {
     QTransform transform;
     transform.rotate(90);
-    loadImage(image.transformed(transform));
-    image.save(filepath);
+    loadImage(image.transformed(transform), false);
+    QtConcurrent::run([this]() { this->image.save(filepath); });
 }
 
-bool MediaViewerDelegate::loadImage(const QString& path) {
+bool MediaViewerDelegate::loadImage(const QString& path, bool fadeAnimation) {
     try {
         if (path.isEmpty()) {
             return false;
@@ -308,7 +324,7 @@ bool MediaViewerDelegate::loadImage(const QString& path) {
         }
         if (this->image.isNull() || this->image != loaded) {
             this->image = loaded;
-            emit imageChanged();
+            emit imageChanged(fadeAnimation);
             return true;
         }
     } catch (...) {
@@ -316,14 +332,14 @@ bool MediaViewerDelegate::loadImage(const QString& path) {
     }
 }
 
-bool MediaViewerDelegate::loadImage(const QImage& image) {
+bool MediaViewerDelegate::loadImage(const QImage& image, bool fadeAnimation) {
     try {
         if (image.isNull()) {
             return false;
         }
         if (this->image.isNull() || this->image != image) {
             this->image = image;
-            emit imageChanged();
+            emit imageChanged(fadeAnimation);
             return true;
         }
     } catch (...) {

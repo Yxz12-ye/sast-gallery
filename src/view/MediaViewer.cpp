@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QScreen>
 #include <delegate/MediaViewerDelegate.h>
+#include <qobject.h>
 #include <utils/Tools.h>
 
 MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
@@ -17,8 +18,10 @@ MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
 MediaViewer::~MediaViewer() {}
 
 void MediaViewer::initWindow() {
-    resize(800, 600);
-    setWindowTitle(QString("View %1").arg(QDir::toNativeSeparators(delegate->getFilePath())));
+    resize(1080, 720);
+    setMinimumSize(640, 480);
+    QString fileName = QFileInfo(delegate->getFilePath()).fileName();
+    setWindowTitle(fileName);
 }
 
 void MediaViewer::initContent() {
@@ -135,4 +138,8 @@ void MediaViewer::initContent() {
     zoomOutButton->setStatusTip("Zoom out");
     maximizeButton->setStatusTip("Fullscreen");
     zoom2originalButton->setStatusTip("Zoom to original size");
+}
+
+void MediaViewer::wheelEvent(QWheelEvent* event) {
+    delegate->wheelEvent(event);
 }

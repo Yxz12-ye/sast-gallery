@@ -22,6 +22,9 @@ public:
     void initWindow();
     void initContent();
 
+protected:
+    void wheelEvent(QWheelEvent* event) override;
+
 private:
     QAction* rotateAction{};
     QAction* deleteAction{};

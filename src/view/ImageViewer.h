@@ -11,8 +11,9 @@ class ImageViewer : public QGraphicsView {
 public:
     explicit ImageViewer(QWidget* parent = nullptr);
     explicit ImageViewer(const QPixmap& pixmap, QWidget* parent = nullptr);
-    void setContent(const QPixmap& pixmap);
-    void setContent(const QImage& image);
+    void setContent(const QPixmap& pixmap, bool fadeAnimation = true);
+    void setContent(const QImage& image, bool fadeAnimation = true);
+    void setWheelZoom(bool enabled);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
@@ -25,6 +26,7 @@ private:
     QGraphicsScene* scene;
     QGraphicsPixmapItem* pixmapItem;
     QPoint lastMousePos;
+    bool zoomEnabled;
     bool dragging;
 
     void adjustImageToFit();

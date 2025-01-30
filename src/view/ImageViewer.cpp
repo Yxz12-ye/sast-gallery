@@ -1,6 +1,7 @@
 #include "ImageViewer.h"
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <qgraphicsview.h>
 
 ImageViewer::ImageViewer(QWidget* parent)
     : QGraphicsView(parent)
@@ -16,6 +17,7 @@ ImageViewer::ImageViewer(QWidget* parent)
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     setStyleSheet("background-color: transparent;");
     setFrameShape(QFrame::NoFrame);
+    setWheelZoom(true);
 }
 
 ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget* parent)
@@ -23,8 +25,8 @@ ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget* parent)
     setContent(pixmap);
 }
 
-void ImageViewer::setContent(const QPixmap& pixmap) {
-    if (pixmapItem->pixmap().isNull()) {
+void ImageViewer::setContent(const QPixmap& pixmap, bool fadeAnimation) {
+    if (pixmapItem->pixmap().isNull() || !fadeAnimation) {
         pixmapItem->setPixmap(pixmap);
         adjustImageToFit();
         return;
@@ -43,11 +45,18 @@ void ImageViewer::setContent(const QPixmap& pixmap) {
     animation->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
-void ImageViewer::setContent(const QImage& image) {
-    setContent(QPixmap::fromImage(image));
+void ImageViewer::setContent(const QImage& image, bool fadeAnimation) {
+    setContent(QPixmap::fromImage(image), fadeAnimation);
+}
+
+void ImageViewer::setWheelZoom(bool enabled) {
+    zoomEnabled = enabled;
 }
 
 void ImageViewer::wheelEvent(QWheelEvent* event) {
+    if (!zoomEnabled) {
+        return;
+    }
     const double scaleFactor = 1.15;
     if (event->angleDelta().y() > 0) {
         scale(scaleFactor, scaleFactor);

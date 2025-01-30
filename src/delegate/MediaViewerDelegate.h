@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPersistentModelIndex>
 #include <QVBoxLayout>
+#include <QWheelEvent>
 
 class MediaViewer;
 
@@ -20,9 +21,10 @@ public:
     [[nodiscard]] auto getFilePath() const { return filepath; }
     [[nodiscard]] auto getImage() const { return this->image; }
     void initConnections();
+    void wheelEvent(QWheelEvent* event);
 
 signals:
-    void imageChanged();
+    void imageChanged(bool fadeAnimation = true);
 
 public slots:
     void onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last);
@@ -45,7 +47,7 @@ private:
     QVBoxLayout* layout;
     double scaleFactor;
 
-    bool loadImage(const QString& path);
-    bool loadImage(const QImage& image);
+    bool loadImage(const QString& path, bool fadeAnimation = true);
+    bool loadImage(const QImage& image, bool fadeAnimation = true);
     void scaleImage(double factor);
 };
