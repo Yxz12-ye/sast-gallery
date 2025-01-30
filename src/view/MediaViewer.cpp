@@ -81,6 +81,7 @@ void MediaViewer::initContent() {
                           .arg(QString::number(QImage(delegate->getFilePath()).height()))
                           .arg(Tools::fileSizeString(delegate->getFilePath())),
                       this);
+    fileInfoBriefText->setWordWrap(false);
     fileInfoBriefText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     fileInfoBriefText->setTextPixelSize(14);
 

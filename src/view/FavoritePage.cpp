@@ -1,5 +1,5 @@
 #include "FavoritePage.h"
-#include "utils/GalleryWidget.h"
+#include "component/GalleryWidget.h"
 #include <ElaText.h>
 
 FavoritePage::FavoritePage(QAbstractItemModel* model, QWidget* parent)

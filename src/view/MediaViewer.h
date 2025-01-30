@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageViewer.h"
+#include "component/ImageViewer.h"
 #include <ElaIconButton.h>
 #include <ElaSlider.h>
 #include <ElaText.h>

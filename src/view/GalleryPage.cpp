@@ -1,5 +1,5 @@
 #include "GalleryPage.h"
-#include "utils/GalleryWidget.h"
+#include "component/GalleryWidget.h"
 #include <QListView>
 
 GalleryPage::GalleryPage(QAbstractItemModel* model, QWidget* parent)

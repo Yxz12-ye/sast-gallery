@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ElaScrollPage.h>
 
 class BasePage : public ElaScrollPage {

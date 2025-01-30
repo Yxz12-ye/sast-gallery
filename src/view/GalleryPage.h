@@ -1,6 +1,6 @@
 #pragma once
+
 #include "BasePage.h"
-#include "utils/MediaFlexLayout.h"
 #include <QAbstractItemModel>
 
 class GalleryPage : public BasePage {
