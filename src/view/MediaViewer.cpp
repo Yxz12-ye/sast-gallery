@@ -144,5 +144,18 @@ void MediaViewer::initContent() {
 }
 
 void MediaViewer::wheelEvent(QWheelEvent* event) {
+    if (imageViewer->isZoomEnabled()) {
+        const double Factor = 1.05;
+        if (event->angleDelta().y() > 0) {
+            imageViewer->scale(Factor, Factor);
+            imageViewer->setScaleFactor(imageViewer->getScaleFactor() * (Factor * Factor));
+        } else {
+            imageViewer->scale(1.0 / Factor, 1.0 / Factor);
+            imageViewer->setScaleFactor(imageViewer->getScaleFactor() / Factor);
+        }
+        emit imageViewer->scaleFactorChanged(imageViewer->getScaleFactor());
+        event->accept();
+        return;
+    }
     delegate->wheelEvent(event);
 }

@@ -14,13 +14,14 @@ public:
     void setContent(const QPixmap& pixmap, bool fadeAnimation = true);
     void setContent(const QImage& image, bool fadeAnimation = true);
     void setWheelZoom(bool enabled);
+    bool isZoomEnabled() const;
+    double getScaleFactor() const;
     void setScaleFactor(double scaleFactor);
 
 signals:
     void scaleFactorChanged(double newFactor);
 
 protected:
-    void wheelEvent(QWheelEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
