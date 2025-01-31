@@ -62,6 +62,9 @@ void ImageViewer::setScaleFactor(double newFactor) {
 }
 
 void ImageViewer::wheelEvent(QWheelEvent* event) {
+    if (!zoomEnabled) {
+        return;
+    }
     const double Factor = 1.05;
     if (event->angleDelta().y() > 0) {
         scale(Factor, Factor);
