@@ -146,14 +146,34 @@ void MediaViewer::initContent() {
 void MediaViewer::wheelEvent(QWheelEvent* event) {
     if (imageViewer->isZoomEnabled()) {
         const double Factor = 1.05;
+        double scaleFactor = imageViewer->getScaleFactor();
+
         if (event->angleDelta().y() > 0) {
-            imageViewer->scale(Factor, Factor);
-            imageViewer->setScaleFactor(imageViewer->getScaleFactor() * (Factor * Factor));
+            if (scaleFactor < 1.0) {
+                imageViewer->scale(1.0 + (Factor - 1.0) / 2, 1.0 + (Factor - 1.0) / 2);
+                scaleFactor *= (1.0 + (Factor - 1.0) / 2);
+            } else {
+                imageViewer->scale(Factor, Factor);
+                scaleFactor *= Factor;
+            }
         } else {
-            imageViewer->scale(1.0 / Factor, 1.0 / Factor);
-            imageViewer->setScaleFactor(imageViewer->getScaleFactor() / Factor);
+            if (scaleFactor < 1.0) {
+                imageViewer->scale(1.0 / (1.0 + (Factor - 1.0) / 2),
+                                   1.0 / (1.0 + (Factor - 1.0) / 2));
+                scaleFactor /= (1.0 + (Factor - 1.0) / 2);
+            } else {
+                imageViewer->scale(1.0 / Factor, 1.0 / Factor);
+                scaleFactor /= Factor;
+            }
         }
-        emit imageViewer->scaleFactorChanged(imageViewer->getScaleFactor());
+
+        // 确保 scaleFactor 不会在小于1时出现惯性
+        if (scaleFactor < 1.0) {
+            scaleFactor = 1.0;
+        }
+
+        imageViewer->setScaleFactor(scaleFactor);
+        emit imageViewer->scaleFactorChanged(scaleFactor);
         event->accept();
         return;
     }
