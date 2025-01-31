@@ -8,7 +8,6 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QImageReader>
-#include <QMessageBox>
 #include <QPaintDevice>
 #include <QScreen>
 #include <QtConcurrent>
@@ -213,16 +212,39 @@ void MediaViewerDelegate::saveImageFileDialog() {
 void MediaViewerDelegate::readFullInfo() {
     QFileInfo info(filepath);
     QString fileInfo = "File Name: " + info.fileName() + "\n";
+    fileInfo += "\n";
     fileInfo += "File Resolution: " + QString::number(QImage(filepath).width()) + "x"
                 + QString::number(QImage(filepath).height()) + "\n";
+    fileInfo += "\n";
     fileInfo += "File Path: " + info.absoluteFilePath() + "\n";
+    fileInfo += "\n";
     fileInfo += "File Size: " + Tools::fileSizeString(filepath) + "\n";
+    fileInfo += "\n";
     fileInfo += "File Created: " + info.birthTime().toString() + "\n";
+    fileInfo += "\n";
     fileInfo += "File Modified: " + info.lastModified().toString() + "\n";
+    fileInfo += "\n";
     fileInfo += "File Accessed: " + info.lastRead().toString() + "\n";
+    fileInfo += "\n";
     fileInfo += "File Type: " + QImageReader::imageFormat(filepath).toUpper() + "\n";
+    fileInfo += "\n";
 
-    QMessageBox::information(view, "Full Image Information", fileInfo);
+    ElaWidget* fileInfoWidget = new ElaWidget();
+    fileInfoWidget->setIsStayTop(true);
+    fileInfoWidget->setIsFixedSize(true);
+    fileInfoWidget->setWindowTitle("Full Image Information");
+
+    ElaText* fileInfoText = new ElaText(fileInfoWidget);
+    fileInfoText->setText(fileInfo);
+    fileInfoText->setTextStyle(ElaTextType::Body);
+    fileInfoText->setTextPixelSize(15);
+    fileInfoText->setIsWrapAnywhere(true);
+
+    QVBoxLayout* layout = new QVBoxLayout(fileInfoWidget);
+    layout->addWidget(fileInfoText);
+    fileInfoWidget->setLayout(layout);
+
+    fileInfoWidget->show();
 }
 
 void MediaViewerDelegate::adaptiveResize() {
