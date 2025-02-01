@@ -21,9 +21,6 @@ public:
     void initWindow();
     void initContent();
 
-protected:
-    void wheelEvent(QWheelEvent* event) override;
-
 private:
     QAction* rotateAction{};
     QAction* deleteAction{};
@@ -33,7 +30,7 @@ private:
     QAction* nextAction{};
     QAction* openFileAction{};
     QAction* copyFileAction{};
-    QAction* saveasFileAction{};
+    QAction* saveFileAction{};
     QAction* openInFileExplorerAction{};
     ElaSlider* zoomSlider{};
     ElaIconButton* likeButton{};

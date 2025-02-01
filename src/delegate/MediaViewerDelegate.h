@@ -2,7 +2,6 @@
 
 #include <QAbstractItemModel>
 #include <QImage>
-#include <QObject>
 #include <QPersistentModelIndex>
 #include <QVBoxLayout>
 #include <QWheelEvent>
@@ -20,16 +19,16 @@ public:
 
     [[nodiscard]] auto getFilePath() const { return filepath; }
     [[nodiscard]] auto getImage() const { return this->image; }
-    void setScaleFactor(double newFactor) { scaleFactor = newFactor; }
     void initConnections();
-    void wheelEvent(QWheelEvent* event);
 
 signals:
+    void scaledByWheel();
     void imageChanged(bool fadeAnimation = true);
-    void scaleFactorChanged(double newFactor);
 
 public slots:
     void onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last);
+    void onImageChanged(bool fadeAnimation = true);
+    void onWheelScrolled(int delta);
     bool copyImageToClipboard();
     void openImageFileDialog();
     void saveImageFileDialog();
@@ -47,9 +46,9 @@ private:
     QString filepath;
     MediaViewer* view;
     QVBoxLayout* layout;
-    double scaleFactor;
+    int scalePercent;
 
     bool loadImage(const QString& path, bool fadeAnimation = true);
     bool loadImage(const QImage& image, bool fadeAnimation = true);
-    void scaleImage(double factor);
+    void scaleTo(int percent);
 };

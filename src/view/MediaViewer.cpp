@@ -12,10 +12,6 @@ MediaViewer::MediaViewer(QAbstractItemModel* model, int index, QWidget* parent)
     initWindow();
     initContent();
     delegate->initConnections();
-    connect(imageViewer,
-            &ImageViewer::scaleFactorChanged,
-            delegate,
-            &MediaViewerDelegate::setScaleFactor);
 }
 
 MediaViewer::~MediaViewer() {}
@@ -45,7 +41,7 @@ void MediaViewer::initContent() {
     ElaMenu* fileMenu = menuBar->addMenu(ElaIconType::Ellipsis, nullptr);
     openFileAction = fileMenu->addAction("Open");
     copyFileAction = fileMenu->addAction("Copy");
-    saveasFileAction = fileMenu->addAction("Save As");
+    saveFileAction = fileMenu->addAction("Save As");
     openInFileExplorerAction = fileMenu->addAction("Open image in File Explorer");
 
     fileMenu->addSeparator();
@@ -58,9 +54,6 @@ void MediaViewer::initContent() {
 
     // image view
     imageViewer = new ImageViewer(QPixmap::fromImage(delegate->getImage()), this);
-    imageViewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    imageViewer->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    imageViewer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // Create buttons
     QHBoxLayout* operationLayout = new QHBoxLayout(this);
@@ -89,9 +82,9 @@ void MediaViewer::initContent() {
     zoomInButton->setMaximumWidth(25);
 
     zoomSlider = new ElaSlider(Qt::Orientation::Horizontal);
-    // range from 1% to 300% scaleFactor: 0.01 to 3.00
-    // scaleFactor = 1 + zoomSlider->value() / 100
-    zoomSlider->setRange(1, 300); //percentage of zoom
+    // range from 1% to 800%
+    zoomSlider->setRange(1, 800);
+    zoomSlider->setSingleStep(1);
     zoomSlider->setValue(100);
     zoomSlider->setMaximumWidth(300);
 
@@ -129,7 +122,7 @@ void MediaViewer::initContent() {
     // show actions status tips when pointing at them
     openFileAction->setStatusTip("Open a file");
     copyFileAction->setStatusTip("Copy a file");
-    saveasFileAction->setStatusTip("Save a file as");
+    saveFileAction->setStatusTip("Save a file as");
     openInFileExplorerAction->setStatusTip("Open the file in File Explorer");
     rotateAction->setStatusTip("Rotate the image");
     deleteAction->setStatusTip("Delete the image");
@@ -141,41 +134,4 @@ void MediaViewer::initContent() {
     zoomOutButton->setStatusTip("Zoom out");
     maximizeButton->setStatusTip("Fullscreen");
     zoom2originalButton->setStatusTip("Zoom to original size");
-}
-
-void MediaViewer::wheelEvent(QWheelEvent* event) {
-    if (imageViewer->isZoomEnabled()) {
-        const double Factor = 1.05;
-        double scaleFactor = imageViewer->getScaleFactor();
-
-        if (event->angleDelta().y() > 0) {
-            if (scaleFactor < 1.0) {
-                imageViewer->scale(1.0 + (Factor - 1.0) / 2, 1.0 + (Factor - 1.0) / 2);
-                scaleFactor *= (1.0 + (Factor - 1.0) / 2);
-            } else {
-                imageViewer->scale(Factor, Factor);
-                scaleFactor *= Factor;
-            }
-        } else {
-            if (scaleFactor < 1.0) {
-                imageViewer->scale(1.0 / (1.0 + (Factor - 1.0) / 2),
-                                   1.0 / (1.0 + (Factor - 1.0) / 2));
-                scaleFactor /= (1.0 + (Factor - 1.0) / 2);
-            } else {
-                imageViewer->scale(1.0 / Factor, 1.0 / Factor);
-                scaleFactor /= Factor;
-            }
-        }
-
-        // 确保 scaleFactor 不会在小于1时出现惯性
-        if (scaleFactor < 1.0) {
-            scaleFactor = 1.0;
-        }
-
-        imageViewer->setScaleFactor(scaleFactor);
-        emit imageViewer->scaleFactorChanged(scaleFactor);
-        event->accept();
-        return;
-    }
-    delegate->wheelEvent(event);
 }

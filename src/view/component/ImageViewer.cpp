@@ -5,7 +5,6 @@
 
 ImageViewer::ImageViewer(QWidget* parent)
     : QGraphicsView(parent)
-    , scaleFactor(1.0)
     , scene(new QGraphicsScene(this))
     , pixmapItem(new QGraphicsPixmapItem())
     , dragging(false) {
@@ -13,12 +12,14 @@ ImageViewer::ImageViewer(QWidget* parent)
     scene->addItem(pixmapItem);
     setRenderHint(QPainter::Antialiasing);
     setRenderHint(QPainter::SmoothPixmapTransform);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setDragMode(QGraphicsView::ScrollHandDrag);
     setBackgroundBrush(Qt::transparent);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     setStyleSheet("background-color: transparent;");
     setFrameShape(QFrame::NoFrame);
-    setWheelZoom(true);
 }
 
 ImageViewer::ImageViewer(const QPixmap& pixmap, QWidget* parent)
@@ -50,25 +51,6 @@ void ImageViewer::setContent(const QImage& image, bool fadeAnimation) {
     setContent(QPixmap::fromImage(image), fadeAnimation);
 }
 
-void ImageViewer::setWheelZoom(bool enabled) {
-    zoomEnabled = enabled;
-}
-
-bool ImageViewer::isZoomEnabled() const {
-    return zoomEnabled;
-}
-
-double ImageViewer::getScaleFactor() const {
-    return scaleFactor;
-}
-
-void ImageViewer::setScaleFactor(double newFactor) {
-    if (scaleFactor != newFactor) {
-        scaleFactor = newFactor;
-        emit scaleFactorChanged(newFactor);
-    }
-}
-
 void ImageViewer::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         lastMousePos = event->pos();
@@ -98,6 +80,11 @@ void ImageViewer::mouseReleaseEvent(QMouseEvent* event) {
 void ImageViewer::resizeEvent(QResizeEvent* event) {
     QGraphicsView::resizeEvent(event);
     adjustImageToFit();
+}
+
+void ImageViewer::wheelEvent(QWheelEvent* event) {
+    emit wheelScrolled(event->angleDelta().y());
+    event->accept();
 }
 
 void ImageViewer::adjustImageToFit() {
