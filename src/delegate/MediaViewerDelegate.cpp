@@ -200,14 +200,44 @@ void MediaViewerDelegate::saveImageFileDialog() {
 void MediaViewerDelegate::readFullInfo() {
     QFileInfo info(filepath);
     QImage image(filepath);
-    QString fileInfo = QString("File Name: %1\n\n"
-                               "File Resolution: %2x%3\n\n"
-                               "File Path: %4\n\n"
-                               "File Size: %5\n\n"
-                               "File Created: %6\n\n"
-                               "File Modified: %7\n\n"
-                               "File Accessed: %8\n\n"
-                               "File Type: %9\n\n")
+    QString fileInfo = QString("<html>"
+                               "<head>"
+                               "  <meta charset='utf-8'>"
+                               "  <style type='text/css'>"
+                               "    body {"
+                               "      font-family: 'Microsoft YaHei', sans-serif;"
+                               "      background-color:rgb(206, 236, 250);" // light blue
+                               "      padding: 15px;"
+                               "      margin: 0;"
+                               "    }"
+                               "    h2 {"
+                               "      color: #0066cc;"
+                               "      border-bottom: 2px solid #0066cc;"
+                               "      padding-bottom: 5px;"
+                               "      margin-bottom: 10px;"
+                               "    }"
+                               "    p {"
+                               "      color: #333;"
+                               "      font-size: 14px;"
+                               "      margin: 8px 0;"
+                               "    }"
+                               "    strong {"
+                               "      color: #000;"
+                               "    }"
+                               "  </style>"
+                               "</head>"
+                               "<body>"
+                               "  <h2>Full File Info</h2>"
+                               "  <p><strong>File Name:</strong> %1</p>"
+                               "  <p><strong>File Resolution:</strong> %2 x %3</p>"
+                               "  <p><strong>File Path:</strong> %4</p>"
+                               "  <p><strong>File Size:</strong> %5</p>"
+                               "  <p><strong>Created Time:</strong> %6</p>"
+                               "  <p><strong>Modified Time:</strong> %7</p>"
+                               "  <p><strong>Access Time:</strong> %8</p>"
+                               "  <p><strong>File Type:</strong> %9</p>"
+                               "</body>"
+                               "</html>")
                            .arg(info.fileName())
                            .arg(image.width())
                            .arg(image.height())
@@ -216,22 +246,23 @@ void MediaViewerDelegate::readFullInfo() {
                            .arg(info.birthTime().toString())
                            .arg(info.lastModified().toString())
                            .arg(info.lastRead().toString())
-                           .arg(QImageReader::imageFormat(filepath).toUpper());
+                           .arg(QString(QImageReader::imageFormat(filepath)).toUpper());
 
     ElaWidget* fileInfoWidget = new ElaWidget();
     fileInfoWidget->setIsStayTop(true);
     fileInfoWidget->setIsFixedSize(true);
     fileInfoWidget->setWindowTitle("Full Image Information");
     fileInfoWidget->setWindowButtonFlag(ElaAppBarType::ButtonType::StayTopButtonHint, false);
+    fileInfoWidget->setStyleSheet("background-color: rgb(222, 241, 250);"); // light blue
 
-    ElaText* fileInfoText = new ElaText(fileInfoWidget);
-    fileInfoText->setText(fileInfo);
-    fileInfoText->setTextStyle(ElaTextType::Body);
-    fileInfoText->setTextPixelSize(15);
-    fileInfoText->setIsWrapAnywhere(true);
+    QLabel* label = new QLabel(fileInfoWidget);
+    label->setTextFormat(Qt::RichText);
+    label->setText(fileInfo);
+    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    label->setMargin(10);
 
     QVBoxLayout* layout = new QVBoxLayout(fileInfoWidget);
-    layout->addWidget(fileInfoText);
+    layout->addWidget(label);
     fileInfoWidget->setLayout(layout);
 
     fileInfoWidget->show();
