@@ -126,6 +126,12 @@ void MediaViewerDelegate::initConnections() {
             &ImageViewer::wheelScrolled,
             this,
             &MediaViewerDelegate::onWheelScrolled);
+
+    connect(view->imageViewer, &ImageViewer::resized, [this]() {
+        int cntPercent = scalePercent;
+        scalePercent = 100;
+        scaleTo(cntPercent);
+    });
 }
 
 void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last) {
@@ -225,8 +231,6 @@ void MediaViewerDelegate::onFileInfoClicked() {
         fileInfoAnimation->setEndValue(350);
     }
     fileInfoAnimation->start();
-    scaleTo(100);
-    view->zoomSlider->setValue(scalePercent);
 }
 
 void MediaViewerDelegate::adaptiveResize() {
