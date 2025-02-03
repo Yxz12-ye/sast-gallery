@@ -92,7 +92,10 @@ void MediaViewerDelegate::initConnections() {
         // add the image to Favorite Page
     });
 
-    connect(view->fileInfoButton, &ElaIconButton::clicked, this, &MediaViewerDelegate::readFullInfo);
+    connect(view->fileInfoButton,
+            &ElaIconButton::clicked,
+            this,
+            &MediaViewerDelegate::onFileInfoClicked);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, [this]() {
         scaleTo(scalePercent + 10);
@@ -149,6 +152,7 @@ void MediaViewerDelegate::onImageChanged(bool fadeAnimation) {
     view->setWindowTitle(QFileInfo(filepath).fileName());
     scalePercent = 100;
     view->zoomSlider->setValue(scalePercent);
+    view->fileInfoWidget->loadInfo(filepath);
 }
 
 void MediaViewerDelegate::onWheelScrolled(int delta) {
@@ -197,75 +201,32 @@ void MediaViewerDelegate::saveImageFileDialog() {
     }
 }
 
-void MediaViewerDelegate::readFullInfo() {
-    QFileInfo info(filepath);
-    QImage image(filepath);
-    QString fileInfo = QString("<html>"
-                               "<head>"
-                               "  <meta charset='utf-8'>"
-                               "  <style type='text/css'>"
-                               "    body {"
-                               "      font-family: 'Microsoft YaHei', sans-serif;"
-                               "      background-color:rgb(206, 236, 250);" // light blue
-                               "      padding: 15px;"
-                               "      margin: 0;"
-                               "    }"
-                               "    h2 {"
-                               "      color: #0066cc;"
-                               "      border-bottom: 2px solid #0066cc;"
-                               "      padding-bottom: 5px;"
-                               "      margin-bottom: 10px;"
-                               "    }"
-                               "    p {"
-                               "      color: #333;"
-                               "      font-size: 14px;"
-                               "      margin: 8px 0;"
-                               "    }"
-                               "    strong {"
-                               "      color: #000;"
-                               "    }"
-                               "  </style>"
-                               "</head>"
-                               "<body>"
-                               "  <h2>Full File Info</h2>"
-                               "  <p><strong>File Name:</strong> %1</p>"
-                               "  <p><strong>File Resolution:</strong> %2 x %3</p>"
-                               "  <p><strong>File Path:</strong> %4</p>"
-                               "  <p><strong>File Size:</strong> %5</p>"
-                               "  <p><strong>Created Time:</strong> %6</p>"
-                               "  <p><strong>Modified Time:</strong> %7</p>"
-                               "  <p><strong>Access Time:</strong> %8</p>"
-                               "  <p><strong>File Type:</strong> %9</p>"
-                               "</body>"
-                               "</html>")
-                           .arg(info.fileName())
-                           .arg(image.width())
-                           .arg(image.height())
-                           .arg(info.absoluteFilePath())
-                           .arg(Tools::fileSizeString(filepath))
-                           .arg(info.birthTime().toString())
-                           .arg(info.lastModified().toString())
-                           .arg(info.lastRead().toString())
-                           .arg(QString(QImageReader::imageFormat(filepath)).toUpper());
-
-    ElaWidget* fileInfoWidget = new ElaWidget();
-    fileInfoWidget->setIsStayTop(true);
-    fileInfoWidget->setIsFixedSize(true);
-    fileInfoWidget->setWindowTitle("Full Image Information");
-    fileInfoWidget->setWindowButtonFlag(ElaAppBarType::ButtonType::StayTopButtonHint, false);
-    fileInfoWidget->setStyleSheet("background-color: rgb(222, 241, 250);"); // light blue
-
-    QLabel* label = new QLabel(fileInfoWidget);
-    label->setTextFormat(Qt::RichText);
-    label->setText(fileInfo);
-    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    label->setMargin(10);
-
-    QVBoxLayout* layout = new QVBoxLayout(fileInfoWidget);
-    layout->addWidget(label);
-    fileInfoWidget->setLayout(layout);
-
-    fileInfoWidget->show();
+void MediaViewerDelegate::onFileInfoClicked() {
+    auto* fileInfoAnimation = new QPropertyAnimation(view->fileInfoWidget, "width");
+    connect(fileInfoAnimation, &QPropertyAnimation::valueChanged, [=](const QVariant& value) {
+        view->fileInfoWidget->setFixedWidth(value.toInt());
+    });
+    connect(fileInfoAnimation,
+            &QPropertyAnimation::finished,
+            fileInfoAnimation,
+            &QObject::deleteLater);
+    fileInfoAnimation->setEasingCurve(QEasingCurve::OutCubic);
+    fileInfoAnimation->setDuration(150);
+    if (view->fileInfoWidget->isVisible()) {
+        fileInfoAnimation->setStartValue(view->fileInfoWidget->width());
+        fileInfoAnimation->setEndValue(0);
+        connect(fileInfoAnimation,
+                &QPropertyAnimation::finished,
+                view->fileInfoWidget,
+                &QWidget::hide);
+    } else {
+        view->fileInfoWidget->show();
+        fileInfoAnimation->setStartValue(view->fileInfoWidget->width());
+        fileInfoAnimation->setEndValue(350);
+    }
+    fileInfoAnimation->start();
+    scaleTo(100);
+    view->zoomSlider->setValue(scalePercent);
 }
 
 void MediaViewerDelegate::adaptiveResize() {
@@ -395,9 +356,10 @@ bool MediaViewerDelegate::loadImage(const QImage& image, bool fadeAnimation) {
 }
 
 void MediaViewerDelegate::scaleTo(int percent) {
-    if (percent < 1 || percent > 800) {
-        qDebug() << "Invalid scale percent: " << percent;
-        return;
+    if (percent < 1) {
+        percent = 1;
+    } else if (percent > 800) {
+        percent = 800;
     }
     const double scaleFactor = static_cast<double>(percent) / scalePercent;
     view->imageViewer->scale(scaleFactor, scaleFactor);

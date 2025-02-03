@@ -32,7 +32,7 @@ public slots:
     bool copyImageToClipboard();
     void openImageFileDialog();
     void saveImageFileDialog();
-    void readFullInfo();
+    void onFileInfoClicked();
     void adaptiveResize();
     void deleteImage();
     void prevImage();
