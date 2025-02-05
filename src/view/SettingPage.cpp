@@ -106,10 +106,10 @@ SettingPage::SettingPage(QWidget* parent)
             [=](int index){
                 if (index == 0){
                     //eTheme->setThemeMode(ElaThemeType::Light);
-                    settings.setValue("wheelBehavior","zoom");
+                    settings.setValue("wheelBehavior",0);
                 }else{
                     //eTheme->setThemeMode(ElaThemeType::Dark);
-                    settings.setValue("wheelBehavior","switch");
+                    settings.setValue("wheelBehavior",1);
                 }
             }
             );
@@ -118,6 +118,10 @@ SettingPage::SettingPage(QWidget* parent)
     auto deletionSwitchArea = createScrollPageArea("Ask for deletion permission",
                                                    deletionSwitchButton);
     // TODO: implement the rest
+    connect(deletionSwitchButton,&ElaToggleSwitch::toggled,this,[=](bool checked){
+        eApp->setIsEnableMica(checked);
+        settings.setValue("confirmDeletion",checked);
+    });
 
     auto centralWidget = new QWidget(this);
     centralWidget->setWindowTitle("Setting");
