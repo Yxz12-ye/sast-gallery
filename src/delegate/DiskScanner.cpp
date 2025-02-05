@@ -107,9 +107,10 @@ void DiskScanner::scanPath(const QString& path, bool fullScan) {
     }
     cache.insert(path, newCache);
 
-    auto&& [added, removed] = diff(oldCache, newCache);
+    auto&& [added, removed, modified] = diff(oldCache, newCache);
     pendingCreated += added;
     pendingDeleted += removed;
+    pendingModified += modified;
 }
 
 void DiskScanner::submitChange(bool fullScan) {
@@ -127,6 +128,25 @@ void DiskScanner::submitChange(bool fullScan) {
         emit fileDeleted(pendingDeleted);
         pendingDeleted.clear();
     }
+    if (pendingModified.size() != 0) {
+        emit fileModified(pendingModified);
+        pendingModified.clear();
+        /*
+        onModelLayoutChanged called
+        Debug Error!
+        Program: D:\Qt\6.8.2\msvc2022_64\bin\Qt6Cored.dll
+        Module: 6.8.2
+        File: D:\other\Rope\sast-gallery\src\view\component\GalleryWidget.cpp
+        Line: 61
+
+        onModelLayoutChanged called
+
+        (Press Retry to debug the application)
+        
+        ** Ignore ERROR and refresh the image normally, but there may be a bug of overlapping images **
+
+        */
+    }
 }
 
 DiskScanner::DiffResult DiskScanner::diff(const QStringList& oldv, const QStringList& newv) {
@@ -139,6 +159,10 @@ DiskScanner::DiffResult DiskScanner::diff(const QStringList& oldv, const QString
     }();
     res.removed = [=]() {
         auto res = olds - news;
+        return QStringList(res.begin(), res.end());
+    }();
+    res.modified = [=]() {
+        auto res = news & olds;
         return QStringList(res.begin(), res.end());
     }();
     return res;
