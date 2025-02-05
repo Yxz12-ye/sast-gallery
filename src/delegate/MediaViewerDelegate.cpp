@@ -15,6 +15,7 @@
 #include <utils/Settings.hpp>
 #include <utils/Tools.h>
 #include <view/MediaViewer.h>
+#include <QDesktopServices>
 
 MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
                                          int index,
@@ -70,6 +71,10 @@ void MediaViewerDelegate::initConnections() {
 
     //TODO(must): implement the openInFileExplorer functionality
     //connect(openInFileExplorerAction,......)
+    connect(MediaViewerDelegate::view->openInFileExplorerAction, &QAction::triggered, this, [=]() {
+        QString path = QFileInfo(filepath).absolutePath();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    });
 
     connect(view->rotateAction, &QAction::triggered, this, &MediaViewerDelegate::rotateImage);
 
