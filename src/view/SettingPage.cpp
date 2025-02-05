@@ -105,10 +105,8 @@ SettingPage::SettingPage(QWidget* parent)
             this,
             [=](int index){
                 if (index == 0){
-                    //eTheme->setThemeMode(ElaThemeType::Light);
                     settings.setValue("wheelBehavior",0);
                 }else{
-                    //eTheme->setThemeMode(ElaThemeType::Dark);
                     settings.setValue("wheelBehavior",1);
                 }
             }

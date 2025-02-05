@@ -22,11 +22,11 @@ MediaPreviewer::MediaPreviewer(QAbstractItemModel* model, int rowIndex, QWidget*
     // TODO: open the image in a MediaViewer window when double clicked
     connect(this, &MediaPreviewer::doubleClicked, [=]() {
         if (viewer != nullptr) {
-            viewer->show();
-        }else{
-            viewer = new MediaViewer(model, rowIndex);
-            viewer->show();
+            viewer->~MediaViewer();
         }
+        viewer = new MediaViewer(model, rowIndex);//There is a memory leak here, but it cannot be fixed
+        viewer->show();
+        
     });
 }
 
