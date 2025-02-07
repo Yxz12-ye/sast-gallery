@@ -95,6 +95,8 @@ void MediaViewerDelegate::initConnections() {
     connect(view->likeButton, &ElaIconButton::clicked, this, [=]() {
         //TODO(must): implement the like functionality
         // add the image to Favorite Page
+        QModelIndex newIndex = mediaListModel->index(mediaIndex.row(), 2);//莫名奇妙的setData函数....
+        mediaListModel->setData(newIndex, !mediaListModel->data(newIndex,MediaListModel::IsFavorite).toBool(), MediaListModel::IsFavorite); 
     });
 
     connect(view->fileInfoButton,
