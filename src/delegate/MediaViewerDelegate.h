@@ -46,7 +46,6 @@ private:
     QString filepath;
     MediaViewer* view;
     QVBoxLayout* layout;
-    int scalePercent;
 
     bool loadImage(const QString& path, bool fadeAnimation = true);
     bool loadImage(const QImage& image, bool fadeAnimation = true);
@@ -56,4 +55,6 @@ private:
 
     QSet<QString> fav;
     QString fav_path = "Favourite.dat";
+
+    [[nodiscard]] int getScale() const;
 };

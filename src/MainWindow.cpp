@@ -29,7 +29,7 @@ void MainWindow::initContent() {
     addPageNode("Gallery", galleryPage, ElaIconType::Images);
 
     favoritePage = new FavoritePage(favoriteModel, this);
-    addPageNode("Favourites", favoritePage, ElaIconType::Heart);
+    addPageNode("Favorites", favoritePage, ElaIconType::Heart);
 
     aboutPage = new AboutPage(this);
     QString aboutPageKey;
@@ -45,19 +45,20 @@ void MainWindow::initModel() {
 
     galleryModel = new QSortFilterProxyModel();
     galleryModel->setSourceModel(mediaModel);
-    galleryModel->sort(MediaListModel::LastModifiedTime);
+    galleryModel->sort(MediaListModel::LastModifiedTime, Qt::DescendingOrder);
 
     favoriteModel = new QSortFilterProxyModel();
     favoriteModel->setSourceModel(galleryModel);
     favoriteModel->setFilterKeyColumn(MediaListModel::IsFavorite);
     favoriteModel->setFilterFixedString("true");
 
-    diskScanner = new DiskScanner(this);
+    diskScanner = new DiskScanner();
     // clang-format off
     QObject::connect(diskScanner, &DiskScanner::fileCreated, mediaModel, &MediaListModel::appendEntries);
     QObject::connect(diskScanner, &DiskScanner::fileDeleted, mediaModel, &MediaListModel::removeEntries);
     QObject::connect(diskScanner, &DiskScanner::fileModified, mediaModel, &MediaListModel::modifiedEntries);
     QObject::connect(diskScanner, &DiskScanner::fullScan, mediaModel, &MediaListModel::resetEntries);
     // clang-format on
+
     diskScanner->scan();
 }

@@ -26,7 +26,6 @@ MediaViewerDelegate::MediaViewerDelegate(QAbstractItemModel* model,
     : QObject(parent)
     , mediaListModel(model)
     , mediaIndex(model->index(index, MediaListModel::Path))
-    , scalePercent(100)
     , view(viewer) {
     filepath = mediaIndex.data().value<QString>();
     loadImage(filepath);
@@ -48,7 +47,7 @@ void MediaViewerDelegate::initConnections() {
                                  "Error",
                                  "Image failed to load",
                                  3000,
-                                 view);
+                                 view->imageViewer);
         }
         loadImage(this->image);
         QScreen* screen = QGuiApplication::primaryScreen();
@@ -119,15 +118,15 @@ void MediaViewerDelegate::initConnections() {
             &MediaViewerDelegate::onFileInfoClicked);
 
     connect(view->zoomInButton, &ElaIconButton::clicked, [this]() {
-        scaleTo(scalePercent + 10);
-        view->zoomSlider->setValue(scalePercent);
+        scaleTo(getScale() + 10);
+        view->zoomSlider->setValue(getScale());
     });
 
     connect(view->zoomSlider, &ElaSlider::valueChanged, [this](int value) { scaleTo(value); });
 
     connect(view->zoomOutButton, &ElaIconButton::clicked, [this]() {
-        scaleTo(scalePercent - 10);
-        view->zoomSlider->setValue(scalePercent);
+        scaleTo(view->imageViewer->getScale() - 10);
+        view->zoomSlider->setValue(getScale());
     });
 
     connect(view->maximizeButton, &ElaIconButton::clicked, [this]() {
@@ -136,23 +135,17 @@ void MediaViewerDelegate::initConnections() {
 
     connect(view->zoom2originalButton, &ElaIconButton::clicked, [this]() {
         scaleTo(100);
-        view->zoomSlider->setValue(scalePercent);
+        view->zoomSlider->setValue(getScale());
     });
 
     connect(this, &MediaViewerDelegate::scaledByWheel, [this]() {
-        view->zoomSlider->setValue(scalePercent);
+        view->zoomSlider->setValue(getScale());
     });
 
     connect(view->imageViewer,
             &ImageViewer::wheelScrolled,
             this,
             &MediaViewerDelegate::onWheelScrolled);
-
-    connect(view->imageViewer, &ImageViewer::resized, [this]() {
-        int cntPercent = scalePercent;
-        scalePercent = 100;
-        scaleTo(cntPercent);
-    });
 }
 
 void MediaViewerDelegate::onModelRowsToBeRemoved(const QModelIndex& parent, int first, int last) {
@@ -177,15 +170,14 @@ void MediaViewerDelegate::onImageChanged(bool fadeAnimation) {
                                          .arg(QString::number(QImage(image).height()))
                                          .arg(Tools::fileSizeString(filepath)));
     view->setWindowTitle(QFileInfo(filepath).fileName());
-    scalePercent = 100;
-    view->zoomSlider->setValue(scalePercent);
+    view->zoomSlider->setValue(view->imageViewer->getScale());
     view->fileInfoWidget->loadInfo(filepath);
 }
 
 void MediaViewerDelegate::onWheelScrolled(int delta) {
     if (settings.value("wheelBehavior").toInt() == 0) {
         const double scaleFactor = std::abs(delta) / 100.0;
-        scaleTo(scalePercent + delta / 10);
+        scaleTo(view->imageViewer->getScale() + delta / 10);
         emit scaledByWheel();
     } else {
         if (delta > 0) {
@@ -198,12 +190,20 @@ void MediaViewerDelegate::onWheelScrolled(int delta) {
 
 bool MediaViewerDelegate::copyImageToClipboard() {
     if (this->image.isNull()) {
-        ElaMessageBar::error(ElaMessageBarType::Bottom, "Null Image!", nullptr, 2000);
+        ElaMessageBar::error(ElaMessageBarType::Bottom,
+                             "Null Image!",
+                             nullptr,
+                             2000,
+                             view->imageViewer);
         return false;
     } else {
         QClipboard* clipboard = QApplication::clipboard();
         clipboard->setImage(this->image);
-        ElaMessageBar::success(ElaMessageBarType::Bottom, "Copied!", nullptr, 2000);
+        ElaMessageBar::success(ElaMessageBarType::Bottom,
+                               "Copied!",
+                               nullptr,
+                               2000,
+                               view->imageViewer);
         return true;
     }
 }
@@ -304,17 +304,33 @@ void MediaViewerDelegate::deleteImage() {
         });
         connect(confirmDialog, &ElaContentDialog::rightButtonClicked, this, [=, this]() {
             if (!QFile(filepath).remove()) {
-                ElaMessageBar::error(ElaMessageBarType::Bottom, "Delete failed!", nullptr, 2000);
+                ElaMessageBar::error(ElaMessageBarType::Bottom,
+                                     "Delete failed!",
+                                     nullptr,
+                                     2000,
+                                     view->imageViewer);
             } else {
-                ElaMessageBar::success(ElaMessageBarType::Bottom, "Deleted!", nullptr, 2000);
+                ElaMessageBar::success(ElaMessageBarType::Bottom,
+                                       "Deleted!",
+                                       nullptr,
+                                       2000,
+                                       view->imageViewer);
             }
         });
         confirmDialog->exec();
     } else {
         if (!QFile(filepath).remove()) {
-            ElaMessageBar::error(ElaMessageBarType::Bottom, "Delete failed!", nullptr, 2000);
+            ElaMessageBar::error(ElaMessageBarType::Bottom,
+                                 "Delete failed!",
+                                 nullptr,
+                                 2000,
+                                 view->imageViewer);
         } else {
-            ElaMessageBar::success(ElaMessageBarType::Bottom, "Deleted!", nullptr, 2000);
+            ElaMessageBar::success(ElaMessageBarType::Bottom,
+                                   "Deleted!",
+                                   nullptr,
+                                   2000,
+                                   view->imageViewer);
         }
     }
 }
@@ -406,12 +422,9 @@ bool MediaViewerDelegate::saveFav() {
 }
 
 void MediaViewerDelegate::scaleTo(int percent) {
-    if (percent < 1) {
-        percent = 1;
-    } else if (percent > 800) {
-        percent = 800;
-    }
-    const double scaleFactor = static_cast<double>(percent) / scalePercent;
-    view->imageViewer->scale(scaleFactor, scaleFactor);
-    scalePercent = percent;
+    view->imageViewer->scaleTo(percent);
+}
+
+int MediaViewerDelegate::getScale() const {
+    return view->imageViewer->getScale();
 }
