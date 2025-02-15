@@ -26,6 +26,12 @@ public:
 
     enum Property { Path = 0, LastModifiedTime = 1, IsFavorite = 2 };
 
+    bool initFavourite();
+
+private:
+    QSet<QString> fav;
+    QString fav_path = "Favourite.dat";
+
 public slots:
 
     // for signals from disk scanner
