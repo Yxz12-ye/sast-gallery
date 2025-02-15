@@ -88,7 +88,9 @@ bool MediaListModel::initFavourite() {
     in >> fav;
     file.close();
     for(auto& ImgPath : fav) {
-        isFavorite.insert(ImgPath);
+        if(QFile::exists(ImgPath)){
+            isFavorite.insert(ImgPath);
+        }
     }
     return true;
 }

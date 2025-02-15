@@ -405,6 +405,11 @@ bool MediaViewerDelegate::loadFav() {
     in.setVersion(QDataStream::Qt_5_15);
     fav.clear();
     in >> fav;
+    for(auto& ImgPath : fav) {
+        if(!QFile::exists(ImgPath)){
+            fav.remove(ImgPath);
+        }
+    }
     file.close();
     return true;
 }

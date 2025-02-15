@@ -127,25 +127,10 @@ void DiskScanner::submitChange(bool fullScan) {
     if (pendingDeleted.size() != 0) {
         emit fileDeleted(pendingDeleted);
         pendingDeleted.clear();
-    }
-    if (pendingModified.size() != 0) {
+        pendingModified.clear();
+    }else if (pendingModified.size() != 0) {
         emit fileModified(pendingModified);
         pendingModified.clear();
-        /*
-        onModelLayoutChanged called
-        Debug Error!
-        Program: D:\Qt\6.8.2\msvc2022_64\bin\Qt6Cored.dll
-        Module: 6.8.2
-        File: D:\other\Rope\sast-gallery\src\view\component\GalleryWidget.cpp
-        Line: 61
-
-        onModelLayoutChanged called
-
-        (Press Retry to debug the application)
-        
-        ** Ignore ERROR and refresh the image normally, but there may be a bug of overlapping images **
-
-        */
     }
 }
 
