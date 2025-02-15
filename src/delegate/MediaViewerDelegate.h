@@ -49,6 +49,12 @@ private:
 
     bool loadImage(const QString& path, bool fadeAnimation = true);
     bool loadImage(const QImage& image, bool fadeAnimation = true);
+    bool loadFav();
+    bool saveFav();
     void scaleTo(int percent);
+
+    QSet<QString> fav;
+    QString fav_path = "Favourite.dat";
+
     [[nodiscard]] int getScale() const;
 };

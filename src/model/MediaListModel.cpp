@@ -77,8 +77,25 @@ bool MediaListModel::setData(const QModelIndex& index, const QVariant& value, in
     return false;
 }
 
+bool MediaListModel::initFavourite() {
+    QFile file(fav_path);
+    if(!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_5_15);
+    fav.clear();
+    in >> fav;
+    file.close();
+    for(auto& ImgPath : fav) {
+        isFavorite.insert(ImgPath);
+    }
+    return true;
+}
+
 void MediaListModel::resetEntries(const QStringList& paths) {
     beginResetModel();
+    initFavourite();
     path = paths;
     lastModifiedTime.clear();
     for (auto& filePath : path) {
