@@ -45,7 +45,6 @@ private:
     struct DiffResult {
         QStringList added;
         QStringList removed;
-        QStringList modified;
     };
     // compare and signal
     static DiffResult diff(const QStringList& oldv, const QStringList& newv);
@@ -59,6 +58,8 @@ private:
     void submitChange(bool fullScan = false);
 
     QStringList pendingModified;
+    QMap<QString, QDateTime> oldlastModified;
+    QStringList lastModified(const QMap<QString, QDateTime>& oldt, const QMap<QString, QDateTime>& newt);
 
     // QDir name filter
     static const inline QStringList mediaFileFilter = {

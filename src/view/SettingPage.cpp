@@ -103,22 +103,17 @@ SettingPage::SettingPage(QWidget* parent)
     connect(wheelComboBox,
             QOverload<int>::of(&ElaComboBox::currentIndexChanged),
             this,
-            [=](int index){
-                if (index == 0){
-                    settings.setValue("wheelBehavior",0);
-                }else{
-                    settings.setValue("wheelBehavior",1);
-                }
-            }
-            );
+            [=](int index) {
+                settings.setValue("wheelBehavior", index);
+            });
 
     auto deletionSwitchButton = new ElaToggleSwitch(this);
     auto deletionSwitchArea = createScrollPageArea("Ask for deletion permission",
                                                    deletionSwitchButton);
     // TODO: implement the rest
-    connect(deletionSwitchButton,&ElaToggleSwitch::toggled,this,[=](bool checked){
+    connect(deletionSwitchButton, &ElaToggleSwitch::toggled, this, [=](bool checked) {
         eApp->setIsEnableMica(checked);
-        settings.setValue("confirmDeletion",checked);
+        settings.setValue("confirmDeletion", checked);
     });
 
     auto centralWidget = new QWidget(this);

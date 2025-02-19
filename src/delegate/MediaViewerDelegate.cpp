@@ -96,20 +96,9 @@ void MediaViewerDelegate::initConnections() {
     connect(view->likeButton, &ElaIconButton::clicked, this, [=]() {
         //TODO(must): implement the like functionality
         // add the image to Favorite Page
-        QModelIndex newIndex = mediaListModel->index(mediaIndex.row(), 2);
-        //mediaListModel->setData(newIndex, !mediaListModel->data(newIndex,MediaListModel::IsFavorite).toBool(), MediaListModel::IsFavorite);
-        if(fav.isEmpty()) {
-            loadFav();
-        }
+        QModelIndex newIndex = mediaListModel->index(mediaIndex.row(), MediaListModel::IsFavorite);
         qDebug()<<mediaIndex.data(MediaListModel::Path).toString();
-        if(fav.contains(mediaIndex.data(MediaListModel::Path).toString())) {
-            fav.remove(mediaIndex.data(MediaListModel::Path).toString());
-            mediaListModel->setData(newIndex, false, MediaListModel::IsFavorite);
-        } else {
-            fav.insert(mediaIndex.data(MediaListModel::Path).toString());
-            mediaListModel->setData(newIndex, true, MediaListModel::IsFavorite);
-        }
-        saveFav();
+        mediaListModel->setData(newIndex,!newIndex.data(MediaListModel::IsFavorite).toBool(),MediaListModel::IsFavorite);
     });
 
     connect(view->fileInfoButton,
@@ -394,36 +383,6 @@ bool MediaViewerDelegate::loadImage(const QImage& image, bool fadeAnimation) {
     } catch (...) {
     }
     return false;
-}
-
-bool MediaViewerDelegate::loadFav() {
-    QFile file(fav_path);
-    if (!file.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-    QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_5_15);
-    fav.clear();
-    in >> fav;
-    for(auto& ImgPath : fav) {
-        if(!QFile::exists(ImgPath)){
-            fav.remove(ImgPath);
-        }
-    }
-    file.close();
-    return true;
-}
-
-bool MediaViewerDelegate::saveFav() {
-    QFile file(fav_path);
-    if (!file.open(QIODevice::WriteOnly|QIODevice::Truncate)) {
-        return false;
-    }
-    QDataStream out(&file);
-    out.setVersion(QDataStream::Qt_5_15);
-    out << fav;
-    file.close();
-    return true;
 }
 
 void MediaViewerDelegate::scaleTo(int percent) {

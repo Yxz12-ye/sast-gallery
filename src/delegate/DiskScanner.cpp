@@ -100,14 +100,19 @@ void DiskScanner::scanPath(const QString& path, bool fullScan) {
     qDebug() << "DiskScanner: scanning " << path;
     QStringList oldCache = fullScan ? QStringList{} : cache.value(path);
     QStringList newCache;
+    QMap<QString, QDateTime> oldTimeCache = fullScan ? QMap<QString, QDateTime>{} : oldlastModified;
+    QMap<QString, QDateTime> newTimeCache;
     auto&& entryInfoList = QDir(path).entryInfoList(mediaFileFilter,
                                                     QDir::Files | QDir::NoDotAndDotDot);
     for (auto& entry : entryInfoList) {
         newCache += entry.absoluteFilePath();
+        newTimeCache.insert(entry.absoluteFilePath(), entry.lastModified());
     }
     cache.insert(path, newCache);
+    oldlastModified = newTimeCache;
 
-    auto&& [added, removed, modified] = diff(oldCache, newCache);
+    auto&& [added, removed] = diff(oldCache, newCache);
+    QStringList modified = lastModified(oldTimeCache, newTimeCache);
     pendingCreated += added;
     pendingDeleted += removed;
     pendingModified += modified;
@@ -127,11 +132,23 @@ void DiskScanner::submitChange(bool fullScan) {
     if (pendingDeleted.size() != 0) {
         emit fileDeleted(pendingDeleted);
         pendingDeleted.clear();
-        pendingModified.clear();
-    }else if (pendingModified.size() != 0) {
+    }
+    if (pendingModified.size() != 0) {
         emit fileModified(pendingModified);
         pendingModified.clear();
     }
+}
+
+QStringList DiskScanner::lastModified(const QMap<QString, QDateTime>& oldt,
+                                      const QMap<QString, QDateTime>& newt) {
+    QStringList res;
+    for (auto& key : newt.keys()) {
+        if (oldt.contains(key) && oldt.value(key) != newt.value(key)) {
+            res.append(key);
+        }
+    }
+    qDebug() << "DiskScanner: last modified " << res;
+    return res;
 }
 
 DiskScanner::DiffResult DiskScanner::diff(const QStringList& oldv, const QStringList& newv) {
@@ -144,10 +161,6 @@ DiskScanner::DiffResult DiskScanner::diff(const QStringList& oldv, const QString
     }();
     res.removed = [=]() {
         auto res = olds - news;
-        return QStringList(res.begin(), res.end());
-    }();
-    res.modified = [=]() {
-        auto res = news & olds;
         return QStringList(res.begin(), res.end());
     }();
     return res;

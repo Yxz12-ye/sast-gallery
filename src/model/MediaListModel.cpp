@@ -69,15 +69,18 @@ bool MediaListModel::setData(const QModelIndex& index, const QVariant& value, in
         if (value.value<bool>()) {
             isFavorite.insert(path.value(index.row()));
             dataChanged(index, index);
+            saveFav();
         } else {
             isFavorite.remove(path.value(index.row()));
             dataChanged(index, index);
+            saveFav();
         }
     }
     return false;
 }
 
-bool MediaListModel::initFavourite() {
+bool MediaListModel::loadFav() {
+    QSet<QString> fav;
     QFile file(fav_path);
     if(!file.open(QIODevice::ReadOnly)) {
         return false;
@@ -95,9 +98,21 @@ bool MediaListModel::initFavourite() {
     return true;
 }
 
+bool MediaListModel::saveFav() {
+    QFile file(fav_path);
+    if (!file.open(QIODevice::WriteOnly|QIODevice::Truncate)) {
+        return false;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_5_15);
+    out << isFavorite;
+    file.close();
+    return true;
+}
+
 void MediaListModel::resetEntries(const QStringList& paths) {
     beginResetModel();
-    initFavourite();
+    loadFav();
     path = paths;
     lastModifiedTime.clear();
     for (auto& filePath : path) {
