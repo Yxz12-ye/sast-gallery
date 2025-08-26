@@ -73,4 +73,6 @@ pre-commit install
 
 ## 任务和其他说明
 
+> 2024 C++组 WoC 已于 2025-03-09 结束
+
 [SAST2024.C++组 Winter of Code 企划](https://njupt-sast.feishu.cn/docx/PCundVXlYoFOeixGjDlcciRwnsh)
